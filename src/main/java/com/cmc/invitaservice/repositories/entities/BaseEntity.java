@@ -22,13 +22,13 @@ public class BaseEntity implements Serializable {
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at", updatable = false)
-    private Date createdAt;
+    @Column(name = "created_time", updatable = false)
+    private Date createdTime;
 
     @Basic
     @UpdateTimestamp
-    @Column(name = "modified_at")
+    @Column(name = "last_updated_time")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date lastModifiedAt;
+    private Date lastUpdatedTime;
 
 }
