@@ -7,5 +7,4 @@ import java.util.Optional;
 
 public interface InvitaDocumentRepository extends JpaRepository<InvitaDocument,Long> {
     Optional<InvitaDocument> findInvitaDocumentById(Long id);
-    Optional<InvitaDocument> findInvitaDocumentByDocumentName(String documentName);
 }

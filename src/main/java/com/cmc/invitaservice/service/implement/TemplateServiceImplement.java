@@ -1,13 +1,12 @@
 package com.cmc.invitaservice.service.implement;
 
-import com.cmc.invitaservice.models.external.response.GetAllDocumentResponse;
+import com.cmc.invitaservice.models.external.request.CreateTemplateRequest;
 import com.cmc.invitaservice.models.external.response.GetAllTemplateResponse;
 import com.cmc.invitaservice.repositories.InvitaTemplateRepository;
 import com.cmc.invitaservice.repositories.entities.InvitaTemplate;
 import com.cmc.invitaservice.service.TemplateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,12 +39,21 @@ public class TemplateServiceImplement implements TemplateService {
     }
 
     @Override
-    public Optional<InvitaTemplate> getTemplateByName(String templateName){
-        return invitaTemplateRepository.findInvitaTemplateByTemplateName(templateName);
+    public Optional<InvitaTemplate> getTemplateByTemplateId(Long templateId){
+        return invitaTemplateRepository.findInvitaTemplateById(templateId);
     }
 
     @Override
-    public void addTemplate(InvitaTemplate invitaTemplate){
+    public void addTemplate(CreateTemplateRequest createTemplateRequest){
+        InvitaTemplate invitaTemplate = new InvitaTemplate();
+        invitaTemplate.setCreateTemplateRequest(createTemplateRequest);
+        invitaTemplateRepository.save(invitaTemplate);
+    }
+
+    @Override
+    public void changeTemplate(CreateTemplateRequest createTemplateRequest, Long templateId){
+        InvitaTemplate invitaTemplate = invitaTemplateRepository.findInvitaTemplateById(templateId).get();
+        invitaTemplate.setCreateTemplateRequest(createTemplateRequest);
         invitaTemplateRepository.save(invitaTemplate);
     }
 }

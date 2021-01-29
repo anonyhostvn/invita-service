@@ -1,9 +1,9 @@
 package com.cmc.invitaservice.service.implement;
 
+import com.cmc.invitaservice.models.external.request.CreateDocumentRequest;
 import com.cmc.invitaservice.models.external.response.GetAllDocumentResponse;
 import com.cmc.invitaservice.repositories.InvitaDocumentRepository;
 import com.cmc.invitaservice.repositories.entities.InvitaDocument;
-import com.cmc.invitaservice.repositories.entities.InvitaTemplate;
 import com.cmc.invitaservice.service.DocumentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +38,21 @@ public class DocumentServiceImplement implements DocumentService {
     }
 
     @Override
-    public Optional<InvitaDocument> getDocumentByName(String documentName){
-        return  invitaDocumentRepository.findInvitaDocumentByDocumentName(documentName);
+    public Optional<InvitaDocument> getDocumentById(Long documentId){
+        return invitaDocumentRepository.findInvitaDocumentById(documentId);
     }
 
     @Override
-    public void addDocument(InvitaDocument invitaDocument){
+    public void addDocument(CreateDocumentRequest createDocumentRequest){
+        InvitaDocument invitaDocument = new InvitaDocument();
+        invitaDocument.setCreateDocumentRequest(createDocumentRequest);
+        invitaDocumentRepository.save(invitaDocument);
+    }
+
+    @Override
+    public void changeDocument(CreateDocumentRequest createDocumentRequest, Long documentId){
+        InvitaDocument invitaDocument = invitaDocumentRepository.findInvitaDocumentById(documentId).get();
+        invitaDocument.setCreateDocumentRequest(createDocumentRequest);
         invitaDocumentRepository.save(invitaDocument);
     }
 }

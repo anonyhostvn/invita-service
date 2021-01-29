@@ -1,5 +1,6 @@
 package com.cmc.invitaservice.repositories.entities;
 
+import com.cmc.invitaservice.models.external.request.CreateDocumentRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,4 +37,13 @@ public class InvitaDocument extends BaseEntity{
 
     @Column(name = "note")
     private String note;
+
+    public void setCreateDocumentRequest(CreateDocumentRequest createDocumentRequest){
+        this.creatorId = createDocumentRequest.getCreatorId();
+        this.templateId = createDocumentRequest.getTemplateId();
+        this.ownerId = createDocumentRequest.getOwnerId();
+        this.documentName = createDocumentRequest.getDocumentName();
+        this.filledInformation = createDocumentRequest.getFilledInformation();
+        this.note = createDocumentRequest.getNote();
+    }
 }
