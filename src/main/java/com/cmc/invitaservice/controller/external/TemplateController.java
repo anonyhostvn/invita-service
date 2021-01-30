@@ -45,8 +45,8 @@ public class TemplateController {
     }
 
     @PostMapping("/template")
-    public ResponseEntity addTemplate(@RequestBody InvitaTemplate invitaTemplate){
-        return ResponseFactory.success(templateService.addTemplate(invitaTemplate));
+    public ResponseEntity addTemplate(@RequestBody CreateTemplateRequest createTemplateRequest){
+        return ResponseFactory.success(templateService.addTemplate(createTemplateRequest));
     }
 
     @PutMapping("/template/{templateId}")

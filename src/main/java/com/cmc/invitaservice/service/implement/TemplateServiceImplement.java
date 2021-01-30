@@ -44,7 +44,9 @@ public class TemplateServiceImplement implements TemplateService {
     }
 
     @Override
-    public InvitaTemplate addTemplate(InvitaTemplate invitaTemplate){
+    public InvitaTemplate addTemplate(CreateTemplateRequest createTemplateRequest){
+        InvitaTemplate invitaTemplate = new InvitaTemplate();
+        invitaTemplate.setCreateTemplateRequest(createTemplateRequest);
         invitaTemplateRepository.save(invitaTemplate);
         return invitaTemplate;
     }

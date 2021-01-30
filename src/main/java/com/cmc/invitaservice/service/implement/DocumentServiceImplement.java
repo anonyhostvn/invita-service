@@ -1,6 +1,7 @@
 package com.cmc.invitaservice.service.implement;
 
 import com.cmc.invitaservice.models.external.request.CreateDocumentRequest;
+import com.cmc.invitaservice.models.external.request.UpdateDocumentRequest;
 import com.cmc.invitaservice.models.external.response.GetAllDocumentResponse;
 import com.cmc.invitaservice.repositories.InvitaDocumentRepository;
 import com.cmc.invitaservice.repositories.entities.InvitaDocument;
@@ -43,15 +44,17 @@ public class DocumentServiceImplement implements DocumentService {
     }
 
     @Override
-    public InvitaDocument addDocument(InvitaDocument invitaDocument){
+    public InvitaDocument addDocument(CreateDocumentRequest createDocumentRequest){
+        InvitaDocument invitaDocument = new InvitaDocument();
+        invitaDocument.setCreateDocumentRequest(createDocumentRequest);
         invitaDocumentRepository.save(invitaDocument);
         return invitaDocument;
     }
 
     @Override
-    public void changeDocument(CreateDocumentRequest createDocumentRequest, Long documentId){
+    public void changeDocument(UpdateDocumentRequest updateDocumentRequest, Long documentId){
         InvitaDocument invitaDocument = invitaDocumentRepository.findInvitaDocumentById(documentId).get();
-        invitaDocument.setCreateDocumentRequest(createDocumentRequest);
+        invitaDocument.setUpdateDocumentRequest(updateDocumentRequest);
         invitaDocumentRepository.save(invitaDocument);
     }
 }

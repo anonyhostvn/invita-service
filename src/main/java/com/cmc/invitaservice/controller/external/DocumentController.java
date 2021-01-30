@@ -1,6 +1,7 @@
 package com.cmc.invitaservice.controller.external;
 
 import com.cmc.invitaservice.models.external.request.CreateDocumentRequest;
+import com.cmc.invitaservice.models.external.request.UpdateDocumentRequest;
 import com.cmc.invitaservice.models.external.response.GetAllDocumentResponse;
 import com.cmc.invitaservice.repositories.entities.InvitaDocument;
 import com.cmc.invitaservice.response.GeneralResponse;
@@ -44,15 +45,15 @@ public class DocumentController {
     }
 
     @PostMapping("/document")
-    public ResponseEntity addDocument(@RequestBody InvitaDocument invitaDocument){
-        return ResponseFactory.success(documentService.addDocument(invitaDocument));
+    public ResponseEntity addDocument(@RequestBody CreateDocumentRequest createDocumentRequest){
+        return ResponseFactory.success(documentService.addDocument(createDocumentRequest));
     }
 
     @PutMapping("/document/{documentId}")
     public  ResponseEntity editDocument(@PathVariable(name="documentId") Long documentId,
-                                        @RequestBody CreateDocumentRequest createDocumentRequest) {
+                                        @RequestBody UpdateDocumentRequest updateDocumentRequest) {
         if (documentService.getDocumentById(documentId).isPresent()) {
-            documentService.changeDocument(createDocumentRequest, documentId);
+            documentService.changeDocument(updateDocumentRequest, documentId);
             return ResponseFactory.success(documentService.getDocumentById(documentId));
         }
         return ResponseFactory.error(HttpStatus.valueOf("200"),ResponseStatusEnum.UNKNOWN_ERROR);
