@@ -10,6 +10,6 @@ public interface TemplateService {
     GetAllTemplateResponse getAllTemplate();
     void deleteTemplate(Long id);
     Optional<InvitaTemplate> getTemplateByTemplateId(Long id);
-    void addTemplate(CreateTemplateRequest createTemplateRequest);
+    InvitaTemplate addTemplate(InvitaTemplate invitaTemplate);
     void changeTemplate(CreateTemplateRequest createTemplateRequest, Long id);
 }

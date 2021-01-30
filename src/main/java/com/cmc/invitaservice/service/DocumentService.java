@@ -10,6 +10,6 @@ public interface DocumentService {
     GetAllDocumentResponse getAllDocument();
     void deleteDocument(Long id);
     Optional<InvitaDocument> getDocumentById(Long Id);
-    void addDocument(CreateDocumentRequest createDocumentRequest);
+    InvitaDocument addDocument(InvitaDocument invitaDocument);
     void changeDocument(CreateDocumentRequest createDocumentRequest, Long Id);
 }

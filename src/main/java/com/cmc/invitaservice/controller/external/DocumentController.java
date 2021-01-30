@@ -2,11 +2,14 @@ package com.cmc.invitaservice.controller.external;
 
 import com.cmc.invitaservice.models.external.request.CreateDocumentRequest;
 import com.cmc.invitaservice.models.external.response.GetAllDocumentResponse;
+import com.cmc.invitaservice.repositories.entities.InvitaDocument;
 import com.cmc.invitaservice.response.GeneralResponse;
 import com.cmc.invitaservice.response.ResponseFactory;
+import com.cmc.invitaservice.response.ResponseStatusEnum;
 import com.cmc.invitaservice.service.DocumentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,10 +43,9 @@ public class DocumentController {
         return ResponseFactory.success(documentService.getDocumentById(documentId));
     }
 
-    @PostMapping("/document/add")
-    public ResponseEntity addDocument(@RequestBody CreateDocumentRequest createDocumentRequest){
-        documentService.addDocument(createDocumentRequest);
-        return ResponseFactory.success(documentService.getAllDocument());
+    @PostMapping("/document")
+    public ResponseEntity addDocument(@RequestBody InvitaDocument invitaDocument){
+        return ResponseFactory.success(documentService.addDocument(invitaDocument));
     }
 
     @PutMapping("/document/{documentId}")
@@ -53,6 +55,6 @@ public class DocumentController {
             documentService.changeDocument(createDocumentRequest, documentId);
             return ResponseFactory.success(documentService.getDocumentById(documentId));
         }
-        return ResponseEntity.badRequest().body("Bad");
+        return ResponseFactory.error(HttpStatus.valueOf("200"),ResponseStatusEnum.UNKNOWN_ERROR);
     }
 }

@@ -39,9 +39,6 @@ public class InvitaDocument extends BaseEntity{
     private String note;
 
     public void setCreateDocumentRequest(CreateDocumentRequest createDocumentRequest){
-        this.creatorId = createDocumentRequest.getCreatorId();
-        this.templateId = createDocumentRequest.getTemplateId();
-        this.ownerId = createDocumentRequest.getOwnerId();
         this.documentName = createDocumentRequest.getDocumentName();
         this.filledInformation = createDocumentRequest.getFilledInformation();
         this.note = createDocumentRequest.getNote();

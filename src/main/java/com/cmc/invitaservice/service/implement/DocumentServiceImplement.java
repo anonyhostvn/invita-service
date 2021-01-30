@@ -43,10 +43,9 @@ public class DocumentServiceImplement implements DocumentService {
     }
 
     @Override
-    public void addDocument(CreateDocumentRequest createDocumentRequest){
-        InvitaDocument invitaDocument = new InvitaDocument();
-        invitaDocument.setCreateDocumentRequest(createDocumentRequest);
+    public InvitaDocument addDocument(InvitaDocument invitaDocument){
         invitaDocumentRepository.save(invitaDocument);
+        return invitaDocument;
     }
 
     @Override

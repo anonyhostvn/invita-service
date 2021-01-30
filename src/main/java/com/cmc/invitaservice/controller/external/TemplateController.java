@@ -2,11 +2,14 @@ package com.cmc.invitaservice.controller.external;
 
 import com.cmc.invitaservice.models.external.request.CreateTemplateRequest;
 import com.cmc.invitaservice.models.external.response.GetAllTemplateResponse;
+import com.cmc.invitaservice.repositories.entities.InvitaTemplate;
 import com.cmc.invitaservice.response.GeneralResponse;
 import com.cmc.invitaservice.response.ResponseFactory;
+import com.cmc.invitaservice.response.ResponseStatusEnum;
 import com.cmc.invitaservice.service.TemplateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,10 +44,9 @@ public class TemplateController {
         return ResponseFactory.success(templateService.getTemplateByTemplateId(templateId));
     }
 
-    @PostMapping("/template/add")
-    public ResponseEntity addTemplate(@RequestBody CreateTemplateRequest createTemplateRequest){
-        templateService.addTemplate(createTemplateRequest);
-        return ResponseFactory.success(templateService.getAllTemplate());
+    @PostMapping("/template")
+    public ResponseEntity addTemplate(@RequestBody InvitaTemplate invitaTemplate){
+        return ResponseFactory.success(templateService.addTemplate(invitaTemplate));
     }
 
     @PutMapping("/template/{templateId}")
@@ -54,6 +56,6 @@ public class TemplateController {
             templateService.changeTemplate(createTemplateRequest, templateId);
             return ResponseFactory.success(templateService.getTemplateByTemplateId(templateId));
         }
-        return ResponseEntity.badRequest().body("bad");
+        return ResponseFactory.error(HttpStatus.valueOf("200"), ResponseStatusEnum.UNKNOWN_ERROR);
     }
 }
