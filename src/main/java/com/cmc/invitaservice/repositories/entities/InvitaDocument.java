@@ -21,7 +21,7 @@ import javax.persistence.Table;
 public class InvitaDocument extends BaseEntity{
     private static final long serialVersionUID = 8346941764763055164L;
 
-    @Column(name = "creator_id", nullable = false)
+    @Column(name = "creator_id")
     private Long creatorId;
 
     @Column(name = "template_id", nullable = false)
