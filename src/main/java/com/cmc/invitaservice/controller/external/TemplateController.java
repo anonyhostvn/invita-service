@@ -2,7 +2,6 @@ package com.cmc.invitaservice.controller.external;
 
 import com.cmc.invitaservice.models.external.request.CreateTemplateRequest;
 import com.cmc.invitaservice.models.external.response.GetAllTemplateResponse;
-import com.cmc.invitaservice.repositories.entities.InvitaTemplate;
 import com.cmc.invitaservice.response.GeneralResponse;
 import com.cmc.invitaservice.response.ResponseFactory;
 import com.cmc.invitaservice.response.ResponseStatusEnum;

@@ -3,7 +3,6 @@ package com.cmc.invitaservice.controller.external;
 import com.cmc.invitaservice.models.external.request.CreateDocumentRequest;
 import com.cmc.invitaservice.models.external.request.UpdateDocumentRequest;
 import com.cmc.invitaservice.models.external.response.GetAllDocumentResponse;
-import com.cmc.invitaservice.repositories.entities.InvitaDocument;
 import com.cmc.invitaservice.response.GeneralResponse;
 import com.cmc.invitaservice.response.ResponseFactory;
 import com.cmc.invitaservice.response.ResponseStatusEnum;
