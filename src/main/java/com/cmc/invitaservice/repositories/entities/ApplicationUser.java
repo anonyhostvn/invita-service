@@ -1,5 +1,7 @@
 package com.cmc.invitaservice.repositories.entities;
 
+import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
+import com.cmc.invitaservice.models.external.request.CreateTemplateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,4 +34,11 @@ public class ApplicationUser extends BaseEntity {
     @Column(name =  "email", nullable = false, unique = true)
     private  String email;
 
+    public void setCreateAccountRequest(CreateAccountRequest createAccountRequest){
+        this.username = createAccountRequest.getUsername();
+        this.password = createAccountRequest.getPassword();
+        this.firstName = createAccountRequest.getFirstName();
+        this.lastName = createAccountRequest.getLastName();
+        this.email = createAccountRequest.getEmail();
+    }
 }

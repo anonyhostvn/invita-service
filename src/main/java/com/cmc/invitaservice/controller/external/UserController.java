@@ -1,31 +1,34 @@
 package com.cmc.invitaservice.controller.external;
 
-import com.cmc.invitaservice.repositories.ApplicationUserRepository;
-import com.cmc.invitaservice.repositories.entities.ApplicationUser;
+import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
+import com.cmc.invitaservice.response.ResponseFactory;
+import com.cmc.invitaservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
 
-    private ApplicationUserRepository applicationUserRepository;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    private UserService userService;
     @Autowired
-    public UserController(ApplicationUserRepository applicationUserRepository,
-                          BCryptPasswordEncoder bCryptPasswordEncoder){
-        this.applicationUserRepository = applicationUserRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    public UserController(UserService userService){
+        this.userService = userService;
     }
 
     @PostMapping("/sign-up")
-    public void signUp(@RequestBody ApplicationUser user){
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        applicationUserRepository.save(user);
+    public ResponseEntity signUp(@RequestBody CreateAccountRequest createAccountRequest){
+        return ResponseFactory.success(userService.addAccount(createAccountRequest));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity getInfoById(@PathVariable(name="userId") Long userId){
+        return ResponseFactory.success(userService.getApplicationUserbyId(userId));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity getInfoAll(){
+        return ResponseFactory.success(userService.getAllApplicationUser());
     }
 }
