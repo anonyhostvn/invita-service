@@ -1,6 +1,7 @@
 package com.cmc.invitaservice.service.implement;
 
 import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
+import com.cmc.invitaservice.models.external.request.LoginRequest;
 import com.cmc.invitaservice.models.external.response.GetAllApplicationUserResponse;
 import com.cmc.invitaservice.repositories.ApplicationUserRepository;
 import com.cmc.invitaservice.repositories.entities.ApplicationUser;
@@ -35,15 +36,10 @@ public class UserServiceImplement implements UserService{
     }
 
     @Override
-    public ApplicationUser getApplicationUserbyId(Long Id){
-        return applicationUserRepository.findApplicationUserById(Id);
-    }
-
-    @Override
-    public GetAllApplicationUserResponse getAllApplicationUser(){
-        List <ApplicationUser> applicationUserList = applicationUserRepository.findAll();
-        GetAllApplicationUserResponse getAllApplicationUserResponse = new GetAllApplicationUserResponse();
-        getAllApplicationUserResponse.setListApplicationUser(applicationUserList);
-        return getAllApplicationUserResponse;
+    public ApplicationUser getAccount(LoginRequest loginRequest){
+        ApplicationUser applicationUser = applicationUserRepository.findByUsername(loginRequest.getUsername());
+        if (bCryptPasswordEncoder.matches(loginRequest.getPassword(), applicationUser.getPassword()))
+            return applicationUser;
+        return null;
     }
 }

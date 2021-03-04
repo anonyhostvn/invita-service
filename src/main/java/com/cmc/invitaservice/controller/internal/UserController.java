@@ -1,11 +1,16 @@
-package com.cmc.invitaservice.controller.external;
+package com.cmc.invitaservice.controller.internal;
 
 import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
+import com.cmc.invitaservice.models.external.request.LoginRequest;
 import com.cmc.invitaservice.response.ResponseFactory;
 import com.cmc.invitaservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/user")
@@ -22,13 +27,10 @@ public class UserController {
         return ResponseFactory.success(userService.addAccount(createAccountRequest));
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity getInfoById(@PathVariable(name="userId") Long userId){
-        return ResponseFactory.success(userService.getApplicationUserbyId(userId));
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity getInfoAll(){
-        return ResponseFactory.success(userService.getAllApplicationUser());
-    }
+   @PostMapping("/login")
+    public ResponseEntity logIn(@RequestBody LoginRequest loginRequest){
+       if (loginRequest != null)
+           if (userService.getAccount(loginRequest) != null) ResponseFactory.success();
+       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid");
+   }
 }
