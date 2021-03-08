@@ -1,7 +1,6 @@
 package com.cmc.invitaservice.repositories.entities;
 
 import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
-import com.cmc.invitaservice.models.external.request.CreateTemplateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
