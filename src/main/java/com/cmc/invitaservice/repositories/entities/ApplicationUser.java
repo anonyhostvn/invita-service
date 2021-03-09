@@ -1,14 +1,10 @@
 package com.cmc.invitaservice.repositories.entities;
 
 import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 @Getter
@@ -32,6 +28,9 @@ public class ApplicationUser extends BaseEntity {
 
     @Column(name =  "email", nullable = false, unique = true)
     private  String email;
+
+    @OneToMany(mappedBy = "applicationUser", cascade = CascadeType.ALL)
+    private Collection<InvitaDocument> invitaDocuments;
 
     public void setCreateAccountRequest(CreateAccountRequest createAccountRequest){
         this.username = createAccountRequest.getUsername();

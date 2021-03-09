@@ -6,7 +6,6 @@ import lombok.Data;
 public class CreateDocumentRequest {
     private Long creatorId;
     private Long templateId;
-    private Long ownerId;
     private String documentName;
     private String filledInformation;
     private String note;

@@ -7,9 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -27,9 +25,6 @@ public class InvitaDocument extends BaseEntity{
     @Column(name = "template_id", nullable = false)
     private Long templateId;
 
-    @Column(name = "owner_id")
-    private Long ownerId;
-
     @Column(name = "document_name")
     private String documentName;
 
@@ -38,6 +33,10 @@ public class InvitaDocument extends BaseEntity{
 
     @Column(name = "note")
     private String note;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private ApplicationUser applicationUser;
 
     public void setUpdateDocumentRequest(UpdateDocumentRequest updateDocumentRequest){
         this.documentName = updateDocumentRequest.getDocumentName();
@@ -48,7 +47,6 @@ public class InvitaDocument extends BaseEntity{
     public void setCreateDocumentRequest(CreateDocumentRequest createDocumentRequest){
         this.creatorId = createDocumentRequest.getCreatorId();
         this.templateId = createDocumentRequest.getTemplateId();
-        this.ownerId = createDocumentRequest.getOwnerId();
         this.documentName = createDocumentRequest.getDocumentName();
         this.filledInformation = createDocumentRequest.getFilledInformation();
         this.note = createDocumentRequest.getNote();
