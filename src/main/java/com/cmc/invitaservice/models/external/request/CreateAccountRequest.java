@@ -11,6 +11,8 @@ public class CreateAccountRequest {
     @NotBlank
     private String password;
     @NotBlank
+    private String retypePassword;
+    @NotBlank
     private  String firstName;
     @NotBlank
     private String lastName;
@@ -76,5 +78,9 @@ public class CreateAccountRequest {
         String emailPart = email.substring(pos + 1);
         if (emailPart.indexOf('.') == -1) return false;
         return checkEmailPart(emailPart);
+    }
+
+    public boolean checkRetypePassword(String retypePassword, String password){
+        return retypePassword.equals(password);
     }
 }

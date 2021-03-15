@@ -1,6 +1,7 @@
 package com.cmc.invitaservice.service.implement;
 
 import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
+import com.cmc.invitaservice.models.external.request.LoginRequest;
 import com.cmc.invitaservice.repositories.ApplicationUserRepository;
 import com.cmc.invitaservice.repositories.entities.ApplicationUser;
 import com.cmc.invitaservice.service.UserService;
@@ -29,6 +30,12 @@ public class UserServiceImplement implements UserService{
         applicationUser.setPassword(bCryptPasswordEncoder.encode(applicationUser.getPassword()));
         applicationUserRepository.save(applicationUser);
         return applicationUser;
+    }
+
+    @Override
+    public boolean checkAccount(LoginRequest loginRequest){
+        ApplicationUser applicationUser = applicationUserRepository.findByUsername(loginRequest.getUsername());
+        return applicationUser != null && new BCryptPasswordEncoder().matches(loginRequest.getPassword(), applicationUser.getPassword());
     }
 
     @Override

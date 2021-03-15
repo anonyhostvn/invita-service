@@ -35,7 +35,7 @@ public class InvitaDocument extends BaseEntity{
     private String note;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private ApplicationUser applicationUser;
 
     public void setUpdateDocumentRequest(UpdateDocumentRequest updateDocumentRequest){

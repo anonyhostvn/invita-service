@@ -14,7 +14,8 @@ public enum ResponseStatusEnum {
     NAME_ERROR("E-005", "Name must be characters"),
     USER_EXIST("E-006", "User already exists"),
     EMAIL_EXIST("E-007", "Email was registered"),
-    EMAIL_ERROR("E-008", "Email is wrong format");
+    EMAIL_ERROR("E-008", "Email is wrong format"),
+    RETYPE_ERROR("E-009", "Retype is wrong");
 
     private final String code;
     private final String message;

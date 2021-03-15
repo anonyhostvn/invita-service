@@ -1,4 +1,4 @@
-package com.cmc.invitaservice.service.implement;
+package com.cmc.invitaservice.security.filter.service;
 
 import com.cmc.invitaservice.repositories.ApplicationUserRepository;
 import com.cmc.invitaservice.repositories.entities.ApplicationUser;
@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Collections;
 
 @Service
@@ -22,11 +23,12 @@ public class UserDetailsServiceImplement implements UserDetailsService {
     }
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
         ApplicationUser applicationUser =  applicationUserRepository.findByUsername(username);
         if (applicationUser == null){
-            throw new UsernameNotFoundException(username);
+            throw new UsernameNotFoundException("User not found with " + username);
         }
-        return new User(applicationUser.getUsername(), applicationUser.getPassword(), Collections.emptyList());
+        return UserDetailsImplement.build(applicationUser);
     }
 }
