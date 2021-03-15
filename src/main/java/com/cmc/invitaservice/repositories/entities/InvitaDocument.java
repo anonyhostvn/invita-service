@@ -14,7 +14,6 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Table(name = "invita_document")
 public class InvitaDocument extends BaseEntity{
     private static final long serialVersionUID = 8346941764763055164L;

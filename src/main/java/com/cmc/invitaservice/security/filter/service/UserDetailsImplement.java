@@ -3,11 +3,14 @@ package com.cmc.invitaservice.security.filter.service;
 import com.cmc.invitaservice.repositories.entities.ApplicationUser;
 import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class UserDetailsImplement implements UserDetails {
+public class    UserDetailsImplement implements UserDetails {
     private static final long serialVersionUID = 4030000316478277980L;
     private Long id;
     private String username;
@@ -16,25 +19,31 @@ public class UserDetailsImplement implements UserDetails {
     @JsonIgnore
     private String password;
 
-    public UserDetailsImplement(Long id, String username, String email, String password) {
+    private Collection<? extends  GrantedAuthority> authorities;
+    public UserDetailsImplement(Long id, String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.authorities = authorities;
     }
 
     public static UserDetailsImplement build(ApplicationUser user) {
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
         return new UserDetailsImplement(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getPassword());
+                user.getPassword(),
+                authorities);
     }
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return authorities;
     }
 
     public Long getId() {
