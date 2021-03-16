@@ -5,7 +5,6 @@ import com.cmc.invitaservice.models.external.request.ValidRequest;
 import com.cmc.invitaservice.response.ResponseFactory;
 import com.cmc.invitaservice.response.ResponseStatusEnum;
 import com.cmc.invitaservice.service.UserService;
-import com.cmc.invitaservice.service.implement.UserServiceImplement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
