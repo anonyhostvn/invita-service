@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(value = "*")
 @Slf4j
 @RestController
-@RequestMapping(path = "/external/user", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/external", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('USER')")
 public class DocumentController {
 

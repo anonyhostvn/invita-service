@@ -1,9 +1,11 @@
-package com.cmc.invitaservice.models.external.request;
+package com.cmc.invitaservice.service.implement;
 
-import org.springframework.stereotype.Component;
+import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
+import com.cmc.invitaservice.service.ValidRequestService;
+import org.springframework.stereotype.Service;
 
-@Component
-public class ValidRequest {
+@Service
+public class ValidRequestServiceImplement implements ValidRequestService {
     private boolean checkCharacter(char character){
         return (character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z');
     }
@@ -12,6 +14,7 @@ public class ValidRequest {
         return num >= '0' && num <= '9';
     }
 
+    @Override
     public boolean formatUsernameAndPassword(String username){
         int length = username.length();
         if (length < 8 || length > 50) return false;
@@ -31,7 +34,7 @@ public class ValidRequest {
         }
         return true;
     }
-
+    @Override
     public boolean formatName(CreateAccountRequest createAccountRequest){
         return checkName(createAccountRequest.getFirstName()) && checkName(createAccountRequest.getLastName());
     }
@@ -53,7 +56,7 @@ public class ValidRequest {
         }
         return true;
     }
-
+    @Override
     public boolean formatEmail(String email){
         if (email.length() > 100 || email.length() < 10) return false;
         int pos = email.indexOf('@');
@@ -64,7 +67,7 @@ public class ValidRequest {
         if (emailPart.indexOf('.') == -1) return false;
         return checkEmailPart(emailPart);
     }
-
+    @Override
     public boolean checkRetypePassword(String retypePassword, String password){
         return retypePassword.equals(password);
     }
