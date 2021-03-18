@@ -21,8 +21,9 @@ public class InvitaDocument extends BaseEntity{
     @Column(name = "creator_id")
     private Long creatorId;
 
-    @Column(name = "template_id", nullable = false)
-    private Long templateId;
+    @OneToOne
+    @JoinColumn(name = "template_id", referencedColumnName = "id")
+    private InvitaTemplate invitaTemplate;
 
     @Column(name = "document_name")
     private String documentName;
@@ -33,7 +34,7 @@ public class InvitaDocument extends BaseEntity{
     @Column(name = "note")
     private String note;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private ApplicationUser applicationUser;
 
@@ -45,7 +46,6 @@ public class InvitaDocument extends BaseEntity{
 
     public void setCreateDocumentRequest(CreateDocumentRequest createDocumentRequest){
         this.creatorId = createDocumentRequest.getCreatorId();
-        this.templateId = createDocumentRequest.getTemplateId();
         this.documentName = createDocumentRequest.getDocumentName();
         this.filledInformation = createDocumentRequest.getFilledInformation();
         this.note = createDocumentRequest.getNote();

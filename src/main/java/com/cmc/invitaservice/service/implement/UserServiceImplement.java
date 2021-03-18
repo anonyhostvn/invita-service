@@ -3,19 +3,35 @@ package com.cmc.invitaservice.service.implement;
 import com.cmc.invitaservice.models.external.request.ChangePasswordRequest;
 import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
 import com.cmc.invitaservice.models.external.request.LoginRequest;
+import com.cmc.invitaservice.models.external.response.LoginResponse;
 import com.cmc.invitaservice.repositories.ApplicationUserRepository;
 import com.cmc.invitaservice.repositories.RoleRepository;
 import com.cmc.invitaservice.repositories.entities.ApplicationUser;
 import com.cmc.invitaservice.repositories.entities.ERole;
 import com.cmc.invitaservice.repositories.entities.Role;
+import com.cmc.invitaservice.response.ResponseFactory;
+import com.cmc.invitaservice.response.ResponseStatusEnum;
+import com.cmc.invitaservice.security.filter.JWT.JwtUtils;
+import com.cmc.invitaservice.security.filter.service.UserDetailsImplement;
 import com.cmc.invitaservice.service.UserService;
+import com.cmc.invitaservice.validation.ValidRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -23,18 +39,26 @@ public class UserServiceImplement implements UserService{
     private ApplicationUserRepository applicationUserRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private RoleRepository roleRepository;
+    private ValidRequest validRequest;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @Autowired
     public UserServiceImplement(ApplicationUserRepository applicationUserRepository,
                                 BCryptPasswordEncoder bCryptPasswordEncoder,
-                                RoleRepository roleRepository){
+                                RoleRepository roleRepository,
+                                ValidRequest validRequest){
         this.applicationUserRepository = applicationUserRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.roleRepository = roleRepository;
+        this.validRequest= validRequest;
     }
 
-    @Override
-    public ApplicationUser addAccount(CreateAccountRequest createAccountRequest){
+    public ResponseEntity addAccount(CreateAccountRequest createAccountRequest){
         Set<Role> roles = new HashSet<>();
         ApplicationUser applicationUser = new ApplicationUser();
         applicationUser.setCreateAccountRequest(createAccountRequest);
@@ -42,35 +66,91 @@ public class UserServiceImplement implements UserService{
         roles.add(roleRepository.findByName(ERole.ROLE_USER));
         applicationUser.setRoles(roles);
         applicationUserRepository.save(applicationUser);
-        return applicationUser;
+        return ResponseFactory.success(applicationUser, ApplicationUser.class);
     }
 
-    @Override
-    public boolean checkAccount(LoginRequest loginRequest){
+    private ResponseEntity checkAccount(LoginRequest loginRequest) {
         ApplicationUser applicationUser = applicationUserRepository.findByUsername(loginRequest.getUsername());
-        return applicationUser != null && new BCryptPasswordEncoder().matches(loginRequest.getPassword(), applicationUser.getPassword());
+        if (applicationUser != null && new BCryptPasswordEncoder().matches(loginRequest.getPassword(), applicationUser.getPassword())) return null;
+        return ResponseFactory.error(HttpStatus.valueOf(403), ResponseStatusEnum.WRONG_USERNAME_OR_PASSWORD);
+
     }
 
-    @Override
     public boolean findUsername(String username){
         ApplicationUser applicationUser = applicationUserRepository.findByUsername(username);
         return applicationUser != null;
     }
 
-    @Override
     public boolean findEmail(String email){
         ApplicationUser applicationUser = applicationUserRepository.findByEmail(email);
         return applicationUser != null;
     }
 
+    private ResponseEntity validateChangePassword(ChangePasswordRequest changePasswordRequest) {
+        if (!validRequest.formatUsernameAndPassword(changePasswordRequest.getNewPassword()))
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.PASSWORD_ERROR);
+        if (!validRequest.checkRetypePassword(changePasswordRequest.getRetypeNewPassword(),changePasswordRequest.getNewPassword()))
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.RETYPE_ERROR);
+        return null;
+    }
+
     @Override
-    public boolean changePassword(String username, ChangePasswordRequest changePasswordRequest){
+    public ResponseEntity changePassword(ChangePasswordRequest changePasswordRequest){
+        ResponseEntity validateResult = validateChangePassword(changePasswordRequest);
+        if (validateResult != null) return validateResult;
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
         ApplicationUser applicationUser = applicationUserRepository.findByUsername(username);
         if (new BCryptPasswordEncoder().matches(changePasswordRequest.getOldPassword(), applicationUser.getPassword())) {
             applicationUser.setPassword(bCryptPasswordEncoder.encode(changePasswordRequest.getNewPassword()));
             applicationUserRepository.save(applicationUser);
-            return true;
+            return ResponseFactory.success("Password has changed !");
         }
-        return false;
+        return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.RETYPE_OLD_PASSWORD_ERROR);
+    }
+
+    @Override
+    public ResponseEntity loginAccount(LoginRequest loginRequest){
+        ResponseEntity loginResult = checkAccount(loginRequest);
+        if (loginResult != null) return loginResult;
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJWT(authentication);
+
+        UserDetailsImplement userDetailsImplement = (UserDetailsImplement) authentication.getPrincipal();
+        List<String> roles = userDetailsImplement.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        LoginResponse loginResponse = new LoginResponse(jwt, userDetailsImplement.getId(), userDetailsImplement.getUsername(), userDetailsImplement.getEmail(), roles);
+        return ResponseFactory.success(loginResponse, LoginResponse.class);
+    }
+
+    private ResponseEntity validateSignUp(CreateAccountRequest createAccountRequest){
+        if (!validRequest.formatUsernameAndPassword(createAccountRequest.getUsername()))
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.USERNAME_ERROR);
+        if (findUsername(createAccountRequest.getUsername()))
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.USER_EXIST);
+        if (!validRequest.formatUsernameAndPassword(createAccountRequest.getPassword()))
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.PASSWORD_ERROR);
+        if (!validRequest.checkRetypePassword(createAccountRequest.getRetypePassword(),createAccountRequest.getPassword()))
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.RETYPE_ERROR);
+        if (!validRequest.formatName(createAccountRequest))
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NAME_ERROR);
+        if (!validRequest.formatEmail(createAccountRequest.getEmail()))
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.EMAIL_ERROR);
+        if (findEmail(createAccountRequest.getEmail()))
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.EMAIL_EXIST);
+        return null;
+    }
+
+    @Override
+    public ResponseEntity signupAccount(CreateAccountRequest createAccountRequest){
+        ResponseEntity validateResult = validateSignUp(createAccountRequest);
+        if (validateResult != null) return validateResult;
+        return addAccount(createAccountRequest);
     }
 }

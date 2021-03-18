@@ -16,7 +16,9 @@ public enum ResponseStatusEnum {
     EMAIL_EXIST("E-007", "Email was registered"),
     EMAIL_ERROR("E-008", "Email is wrong format"),
     RETYPE_ERROR("E-009", "Retype is wrong"),
-    RETYPE_OLD_PASSWORD_ERROR("E-010", "Password is wrong");
+    RETYPE_OLD_PASSWORD_ERROR("E-010", "Password is wrong"),
+    NOT_EXIST("E-011", "Account not exists"),
+    DELETE_ADMIN("E-012","Can not delete admin");
 
     private final String code;
     private final String message;
