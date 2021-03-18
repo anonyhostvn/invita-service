@@ -34,7 +34,7 @@ public class InvitaDocument extends BaseEntity{
     @Column(name = "note")
     private String note;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private ApplicationUser applicationUser;
 

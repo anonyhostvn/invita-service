@@ -1,5 +1,6 @@
 package com.cmc.invitaservice.controller.external;
 
+import com.cmc.invitaservice.models.external.request.UpdateAccountRequest;
 import com.cmc.invitaservice.models.external.response.GetAllApplicationUserResponse;
 import com.cmc.invitaservice.response.GeneralResponse;
 import com.cmc.invitaservice.response.ResponseFactory;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping(path = "/admin", produces = MediaType.APPLICATION_JSON_VALUE)
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class AdminController {
     private final AdminService adminService;
 
@@ -35,5 +36,11 @@ public class AdminController {
     @DeleteMapping("/user/{userId}")
     public ResponseEntity<GeneralResponse<Object>> deleteUserById(@PathVariable(name="userId") Long userId){
         return adminService.deleteUserById(userId);
+    }
+
+    @PutMapping("/user/{userId}")
+    public ResponseEntity<GeneralResponse<Object>> changeUserById(@PathVariable(name="userId") Long userId,
+                                                                  @RequestBody UpdateAccountRequest updateAccountRequest){
+        return adminService.changeUserById(userId, updateAccountRequest);
     }
 }

@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 @Service
     public class UserDetailsServiceImplement implements UserDetailsService {
 
-    private ApplicationUserRepository applicationUserRepository;
+    private final ApplicationUserRepository applicationUserRepository;
 
     @Autowired
     public UserDetailsServiceImplement(ApplicationUserRepository applicationUserRepository){

@@ -4,8 +4,6 @@ import com.cmc.invitaservice.models.external.request.CreateTemplateRequest;
 import com.cmc.invitaservice.models.external.response.GetAllTemplateResponse;
 import com.cmc.invitaservice.repositories.entities.InvitaTemplate;
 
-import java.util.Optional;
-
 public interface TemplateService {
     GetAllTemplateResponse getAllTemplate();
     void deleteTemplate(Long id);

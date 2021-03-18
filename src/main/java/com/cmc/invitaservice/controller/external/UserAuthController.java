@@ -23,7 +23,7 @@ public class UserAuthController {
     }
 
     @PostMapping("auth/changepassword")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<GeneralResponse<Object>> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest){
         return userService.changePassword(changePasswordRequest);
     }

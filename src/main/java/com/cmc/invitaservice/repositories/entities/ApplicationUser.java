@@ -1,6 +1,7 @@
 package com.cmc.invitaservice.repositories.entities;
 
 import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
+import com.cmc.invitaservice.models.external.request.UpdateAccountRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +34,7 @@ public class ApplicationUser extends BaseEntity {
     @Column(name =  "email", nullable = false, unique = true)
     private  String email;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
@@ -46,5 +47,12 @@ public class ApplicationUser extends BaseEntity {
         this.firstName = createAccountRequest.getFirstName();
         this.lastName = createAccountRequest.getLastName();
         this.email = createAccountRequest.getEmail();
+    }
+
+    public void setUpdateAccountRequest(UpdateAccountRequest updateAccountRequest){
+        this.username = updateAccountRequest.getUsername();
+        this.firstName = updateAccountRequest.getFirstName();
+        this.lastName = updateAccountRequest.getLastName();
+        this.email = updateAccountRequest.getEmail();
     }
 }

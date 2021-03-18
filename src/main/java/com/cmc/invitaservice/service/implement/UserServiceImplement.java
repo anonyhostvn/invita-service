@@ -15,7 +15,6 @@ import com.cmc.invitaservice.response.ResponseStatusEnum;
 import com.cmc.invitaservice.security.filter.JWT.JwtUtils;
 import com.cmc.invitaservice.security.filter.service.UserDetailsImplement;
 import com.cmc.invitaservice.service.UserService;
-import com.cmc.invitaservice.validation.ValidRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,7 +39,7 @@ public class UserServiceImplement implements UserService{
     private final ApplicationUserRepository applicationUserRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RoleRepository roleRepository;
-    private final ValidRequest validRequest;
+    private final ValidationService validationService;
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -52,11 +51,11 @@ public class UserServiceImplement implements UserService{
     public UserServiceImplement(ApplicationUserRepository applicationUserRepository,
                                 BCryptPasswordEncoder bCryptPasswordEncoder,
                                 RoleRepository roleRepository,
-                                ValidRequest validRequest){
+                                ValidationService validationService){
         this.applicationUserRepository = applicationUserRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.roleRepository = roleRepository;
-        this.validRequest= validRequest;
+        this.validationService= validationService;
     }
 
     public ResponseEntity<GeneralResponse<Object>> addAccount(CreateAccountRequest createAccountRequest){
@@ -77,27 +76,9 @@ public class UserServiceImplement implements UserService{
 
     }
 
-    public boolean findUsername(String username){
-        ApplicationUser applicationUser = applicationUserRepository.findByUsername(username);
-        return applicationUser != null;
-    }
-
-    public boolean findEmail(String email){
-        ApplicationUser applicationUser = applicationUserRepository.findByEmail(email);
-        return applicationUser != null;
-    }
-
-    private ResponseEntity<GeneralResponse<Object>> validateChangePassword(ChangePasswordRequest changePasswordRequest) {
-        if (!validRequest.formatUsernameAndPassword(changePasswordRequest.getNewPassword()))
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.PASSWORD_ERROR);
-        if (!validRequest.checkRetypePassword(changePasswordRequest.getRetypeNewPassword(),changePasswordRequest.getNewPassword()))
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.RETYPE_ERROR);
-        return null;
-    }
-
     @Override
     public ResponseEntity<GeneralResponse<Object>> changePassword(ChangePasswordRequest changePasswordRequest){
-        ResponseEntity<GeneralResponse<Object>> validateResult = validateChangePassword(changePasswordRequest);
+        ResponseEntity<GeneralResponse<Object>> validateResult = validationService.validateChangePassword(changePasswordRequest.getNewPassword(), changePasswordRequest.getRetypeNewPassword());
         if (validateResult != null) return validateResult;
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -131,21 +112,14 @@ public class UserServiceImplement implements UserService{
     }
 
     private ResponseEntity<GeneralResponse<Object>> validateSignUp(CreateAccountRequest createAccountRequest){
-        if (!validRequest.formatUsernameAndPassword(createAccountRequest.getUsername()))
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.USERNAME_ERROR);
-        if (findUsername(createAccountRequest.getUsername()))
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.USER_EXIST);
-        if (!validRequest.formatUsernameAndPassword(createAccountRequest.getPassword()))
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.PASSWORD_ERROR);
-        if (!validRequest.checkRetypePassword(createAccountRequest.getRetypePassword(),createAccountRequest.getPassword()))
+        if (!validationService.checkRetypePassword(createAccountRequest.getRetypePassword(),createAccountRequest.getPassword()))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.RETYPE_ERROR);
-        if (!validRequest.formatName(createAccountRequest))
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NAME_ERROR);
-        if (!validRequest.formatEmail(createAccountRequest.getEmail()))
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.EMAIL_ERROR);
-        if (findEmail(createAccountRequest.getEmail()))
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.EMAIL_EXIST);
-        return null;
+        return validationService.validRequest(
+                createAccountRequest.getUsername(),
+                createAccountRequest.getPassword(),
+                createAccountRequest.getFirstName(),
+                createAccountRequest.getLastName(),
+                createAccountRequest.getEmail());
     }
 
     @Override

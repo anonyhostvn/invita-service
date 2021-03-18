@@ -18,7 +18,7 @@ public enum ResponseStatusEnum {
     RETYPE_ERROR("E-009", "Retype is wrong"),
     RETYPE_OLD_PASSWORD_ERROR("E-010", "Password is wrong"),
     NOT_EXIST("E-011", "Account not exists"),
-    DELETE_ADMIN("E-012","Can not delete admin");
+    NOT_UPDATE_ADMIN("E-012","Can not delete admin");
 
     private final String code;
     private final String message;

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping(path = "/external", produces = MediaType.APPLICATION_JSON_VALUE)
-@PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 public class DocumentController {
 
     private final DocumentService documentService;
