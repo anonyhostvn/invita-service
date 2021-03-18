@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class    UserDetailsImplement implements UserDetails {
+public class UserDetailsImplement implements UserDetails {
     private static final long serialVersionUID = 4030000316478277980L;
     private final Long id;
     private final String username;

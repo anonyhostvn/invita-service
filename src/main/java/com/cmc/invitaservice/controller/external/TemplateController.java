@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping(path = "/external", produces = MediaType.APPLICATION_JSON_VALUE)
+
 public class TemplateController {
 
     private TemplateService templateService;
@@ -28,27 +30,32 @@ public class TemplateController {
     }
 
     @GetMapping("/template")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<GeneralResponse<GetAllTemplateResponse>> getAllTemplate() {
         return ResponseFactory.success(templateService.getAllTemplate());
     }
 
     @DeleteMapping("/template/{templateId}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity deleteTemplate(@PathVariable (name = "templateId") Long templateId){
         templateService.deleteTemplate(templateId);
         return ResponseFactory.success();
     }
 
     @GetMapping("/template/{templateId}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity getTemplateById(@PathVariable(name="templateId") Long templateId){
         return ResponseFactory.success(templateService.getTemplateByTemplateId(templateId));
     }
 
     @PostMapping("/template")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity addTemplate(@RequestBody CreateTemplateRequest createTemplateRequest){
         return ResponseFactory.success(templateService.addTemplate(createTemplateRequest));
     }
 
     @PutMapping("/template/{templateId}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public  ResponseEntity editTemplate(@PathVariable(name="templateId") Long templateId,
                                         @RequestBody CreateTemplateRequest createTemplateRequest) {
         if (templateService.getTemplateByTemplateId(templateId) != null){

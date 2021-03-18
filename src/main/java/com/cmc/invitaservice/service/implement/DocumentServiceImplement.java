@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.cmc.invitaservice.repositories.entities.ERole.ROLE_ADMIN;
+
 @Service
 @Slf4j
 public class DocumentServiceImplement implements DocumentService {
@@ -37,7 +39,13 @@ public class DocumentServiceImplement implements DocumentService {
     public GetAllDocumentResponse getAllDocument(){
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
-        List<InvitaDocument> invitaDocumentList = invitaDocumentRepository.findInvitaDocumentByApplicationUserUsername(username);
+        List<InvitaDocument> invitaDocumentList;
+        if (userDetails.getAuthorities().contains(ROLE_ADMIN)) {
+            invitaDocumentList = invitaDocumentRepository.findAll();
+            System.out.println(1);
+        }
+        else
+            invitaDocumentList = invitaDocumentRepository.findInvitaDocumentByApplicationUserUsername(username);
         GetAllDocumentResponse getAllDocumentResponse = new GetAllDocumentResponse();
         getAllDocumentResponse.setListDocument(invitaDocumentList);
         return getAllDocumentResponse;

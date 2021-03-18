@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping(path = "/external", produces = MediaType.APPLICATION_JSON_VALUE)
-@PreAuthorize("hasRole('ROLE_USER')")
 public class DocumentController {
 
     private final DocumentService documentService;
@@ -28,6 +27,7 @@ public class DocumentController {
     }
 
     @GetMapping("/document")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<GeneralResponse<GetAllDocumentResponse>> getAllDocument() {
         return ResponseFactory.success(documentService.getAllDocument());
     }
