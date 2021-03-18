@@ -4,6 +4,7 @@ import com.cmc.invitaservice.models.external.response.GetAllApplicationUserRespo
 import com.cmc.invitaservice.repositories.ApplicationUserRepository;
 import com.cmc.invitaservice.repositories.entities.ApplicationUser;
 import com.cmc.invitaservice.repositories.entities.Role;
+import com.cmc.invitaservice.response.GeneralResponse;
 import com.cmc.invitaservice.response.ResponseFactory;
 import com.cmc.invitaservice.response.ResponseStatusEnum;
 import com.cmc.invitaservice.service.AdminService;
@@ -11,13 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class AdminServiceImplement implements AdminService {
-    private ApplicationUserRepository applicationUserRepository;
+    private final ApplicationUserRepository applicationUserRepository;
 
     public AdminServiceImplement(ApplicationUserRepository applicationUserRepository){
         this.applicationUserRepository = applicationUserRepository;
@@ -33,7 +32,7 @@ public class AdminServiceImplement implements AdminService {
     }
 
     @Override
-    public ResponseEntity getUserById(Long userId){
+    public ResponseEntity<GeneralResponse<Object>> getUserById(Long userId){
         ApplicationUser applicationUser = applicationUserRepository.findApplicationUserById(userId);
         if (applicationUser == null)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_EXIST);
@@ -41,7 +40,7 @@ public class AdminServiceImplement implements AdminService {
     }
 
     @Override
-    public ResponseEntity deleteUserById(Long userId){
+    public ResponseEntity<GeneralResponse<Object>> deleteUserById(Long userId){
         ApplicationUser applicationUser = applicationUserRepository.findApplicationUserById(userId);
         if (applicationUser == null)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_EXIST);

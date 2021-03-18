@@ -51,7 +51,7 @@ public class TemplateController {
     @PutMapping("/template/{templateId}")
     public  ResponseEntity editTemplate(@PathVariable(name="templateId") Long templateId,
                                         @RequestBody CreateTemplateRequest createTemplateRequest) {
-        if (templateService.getTemplateByTemplateId(templateId).isPresent()){
+        if (templateService.getTemplateByTemplateId(templateId) != null){
             templateService.changeTemplate(createTemplateRequest, templateId);
             return ResponseFactory.success(templateService.getTemplateByTemplateId(templateId));
         }

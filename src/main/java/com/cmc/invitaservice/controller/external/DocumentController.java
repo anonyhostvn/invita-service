@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("hasRole('USER')")
 public class DocumentController {
 
-    private DocumentService documentService;
+    private final DocumentService documentService;
 
     @Autowired
     public DocumentController(DocumentService documentService) {
@@ -33,23 +33,23 @@ public class DocumentController {
     }
 
     @DeleteMapping("/document/{documentId}")
-    public ResponseEntity deleteDocument(@PathVariable(name="documentId") Long documentId){
+    public ResponseEntity<GeneralResponse<Object>> deleteDocument(@PathVariable(name="documentId") Long documentId){
         documentService.deleteDocument(documentId);
         return ResponseFactory.success();
     }
 
     @GetMapping("/document/{documentId}")
-    public  ResponseEntity getDocumentByName(@PathVariable(name="documentId") Long documentId){
+    public  ResponseEntity<GeneralResponse<Object>> getDocumentByName(@PathVariable(name="documentId") Long documentId){
         return ResponseFactory.success(documentService.getDocumentById(documentId));
     }
 
     @PostMapping("document")
-    public ResponseEntity<?> addDocument(@RequestBody CreateDocumentRequest createDocumentRequest){
+    public ResponseEntity<GeneralResponse<Object>> addDocument(@RequestBody CreateDocumentRequest createDocumentRequest){
         return ResponseFactory.success(documentService.addDocument(createDocumentRequest));
     }
 
     @PutMapping("/document/{documentId}")
-    public  ResponseEntity editDocument(@PathVariable(name="documentId") Long documentId,
+    public  ResponseEntity<GeneralResponse<Object>> editDocument(@PathVariable(name="documentId") Long documentId,
                                         @RequestBody UpdateDocumentRequest updateDocumentRequest) {
             documentService.changeDocument(updateDocumentRequest, documentId);
             return ResponseFactory.success(documentService.getDocumentById(documentId));

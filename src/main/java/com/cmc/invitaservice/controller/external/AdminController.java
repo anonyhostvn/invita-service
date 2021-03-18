@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "/admin", produces = MediaType.APPLICATION_JSON_VALUE)
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
-    private AdminService adminService;
+    private final AdminService adminService;
 
     public AdminController(AdminService adminService){
         this.adminService = adminService;
@@ -28,12 +28,12 @@ public class AdminController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity getTemplateById(@PathVariable(name="userId") Long userId){
+    public ResponseEntity<GeneralResponse<Object>> getTemplateById(@PathVariable(name="userId") Long userId){
         return adminService.getUserById(userId);
     }
 
     @DeleteMapping("/user/{userId}")
-    public ResponseEntity deleteUserById(@PathVariable(name="userId") Long userId){
+    public ResponseEntity<GeneralResponse<Object>> deleteUserById(@PathVariable(name="userId") Long userId){
         return adminService.deleteUserById(userId);
     }
 }

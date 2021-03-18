@@ -5,6 +5,7 @@ import com.cmc.invitaservice.models.external.request.UpdateDocumentRequest;
 import com.cmc.invitaservice.models.external.response.GetAllDocumentResponse;
 import com.cmc.invitaservice.repositories.ApplicationUserRepository;
 import com.cmc.invitaservice.repositories.InvitaDocumentRepository;
+import com.cmc.invitaservice.repositories.InvitaTemplateRepository;
 import com.cmc.invitaservice.repositories.entities.ApplicationUser;
 import com.cmc.invitaservice.repositories.entities.InvitaDocument;
 import com.cmc.invitaservice.service.DocumentService;
@@ -19,14 +20,17 @@ import java.util.List;
 @Service
 @Slf4j
 public class DocumentServiceImplement implements DocumentService {
-    private InvitaDocumentRepository invitaDocumentRepository;
-    private ApplicationUserRepository applicationUserRepository;
+    private final InvitaDocumentRepository invitaDocumentRepository;
+    private final ApplicationUserRepository applicationUserRepository;
+    private final InvitaTemplateRepository invitaTemplateRepository;
 
     @Autowired
     public DocumentServiceImplement(InvitaDocumentRepository invitaDocumentRepository,
-                                    ApplicationUserRepository applicationUserRepository){
+                                    ApplicationUserRepository applicationUserRepository,
+                                    InvitaTemplateRepository invitaTemplateRepository){
         this.invitaDocumentRepository = invitaDocumentRepository;
         this.applicationUserRepository = applicationUserRepository;
+        this.invitaTemplateRepository = invitaTemplateRepository;
     }
 
     @Override
@@ -63,6 +67,7 @@ public class DocumentServiceImplement implements DocumentService {
         String username = userDetails.getUsername();
         ApplicationUser applicationUser = applicationUserRepository.findByUsername(username);
         InvitaDocument invitaDocument = new InvitaDocument();
+        invitaDocument.setInvitaTemplate(invitaTemplateRepository.findInvitaTemplateById(createDocumentRequest.getTemplateId()));
         invitaDocument.setApplicationUser(applicationUser);
         invitaDocument.setCreateDocumentRequest(createDocumentRequest);
         invitaDocumentRepository.save(invitaDocument);
@@ -75,6 +80,7 @@ public class DocumentServiceImplement implements DocumentService {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
         if (invitaDocument.getApplicationUser().getUsername().equals(username)) {
+            invitaDocument.setInvitaTemplate(invitaTemplateRepository.findInvitaTemplateById(updateDocumentRequest.getTemplateId()));
             invitaDocument.setUpdateDocumentRequest(updateDocumentRequest);
             invitaDocumentRepository.save(invitaDocument);
         }

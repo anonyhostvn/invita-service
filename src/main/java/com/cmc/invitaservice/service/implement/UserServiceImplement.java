@@ -9,6 +9,7 @@ import com.cmc.invitaservice.repositories.RoleRepository;
 import com.cmc.invitaservice.repositories.entities.ApplicationUser;
 import com.cmc.invitaservice.repositories.entities.ERole;
 import com.cmc.invitaservice.repositories.entities.Role;
+import com.cmc.invitaservice.response.GeneralResponse;
 import com.cmc.invitaservice.response.ResponseFactory;
 import com.cmc.invitaservice.response.ResponseStatusEnum;
 import com.cmc.invitaservice.security.filter.JWT.JwtUtils;
@@ -36,10 +37,10 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class UserServiceImplement implements UserService{
-    private ApplicationUserRepository applicationUserRepository;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private RoleRepository roleRepository;
-    private ValidRequest validRequest;
+    private final ApplicationUserRepository applicationUserRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RoleRepository roleRepository;
+    private final ValidRequest validRequest;
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -58,7 +59,7 @@ public class UserServiceImplement implements UserService{
         this.validRequest= validRequest;
     }
 
-    public ResponseEntity addAccount(CreateAccountRequest createAccountRequest){
+    public ResponseEntity<GeneralResponse<Object>> addAccount(CreateAccountRequest createAccountRequest){
         Set<Role> roles = new HashSet<>();
         ApplicationUser applicationUser = new ApplicationUser();
         applicationUser.setCreateAccountRequest(createAccountRequest);
@@ -69,7 +70,7 @@ public class UserServiceImplement implements UserService{
         return ResponseFactory.success(applicationUser, ApplicationUser.class);
     }
 
-    private ResponseEntity checkAccount(LoginRequest loginRequest) {
+    private ResponseEntity<GeneralResponse<Object>> checkAccount(LoginRequest loginRequest) {
         ApplicationUser applicationUser = applicationUserRepository.findByUsername(loginRequest.getUsername());
         if (applicationUser != null && new BCryptPasswordEncoder().matches(loginRequest.getPassword(), applicationUser.getPassword())) return null;
         return ResponseFactory.error(HttpStatus.valueOf(403), ResponseStatusEnum.WRONG_USERNAME_OR_PASSWORD);
@@ -86,7 +87,7 @@ public class UserServiceImplement implements UserService{
         return applicationUser != null;
     }
 
-    private ResponseEntity validateChangePassword(ChangePasswordRequest changePasswordRequest) {
+    private ResponseEntity<GeneralResponse<Object>> validateChangePassword(ChangePasswordRequest changePasswordRequest) {
         if (!validRequest.formatUsernameAndPassword(changePasswordRequest.getNewPassword()))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.PASSWORD_ERROR);
         if (!validRequest.checkRetypePassword(changePasswordRequest.getRetypeNewPassword(),changePasswordRequest.getNewPassword()))
@@ -95,8 +96,8 @@ public class UserServiceImplement implements UserService{
     }
 
     @Override
-    public ResponseEntity changePassword(ChangePasswordRequest changePasswordRequest){
-        ResponseEntity validateResult = validateChangePassword(changePasswordRequest);
+    public ResponseEntity<GeneralResponse<Object>> changePassword(ChangePasswordRequest changePasswordRequest){
+        ResponseEntity<GeneralResponse<Object>> validateResult = validateChangePassword(changePasswordRequest);
         if (validateResult != null) return validateResult;
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -111,8 +112,8 @@ public class UserServiceImplement implements UserService{
     }
 
     @Override
-    public ResponseEntity loginAccount(LoginRequest loginRequest){
-        ResponseEntity loginResult = checkAccount(loginRequest);
+    public ResponseEntity<GeneralResponse<Object>> loginAccount(LoginRequest loginRequest){
+        ResponseEntity<GeneralResponse<Object>> loginResult = checkAccount(loginRequest);
         if (loginResult != null) return loginResult;
 
         Authentication authentication = authenticationManager.authenticate(
@@ -129,7 +130,7 @@ public class UserServiceImplement implements UserService{
         return ResponseFactory.success(loginResponse, LoginResponse.class);
     }
 
-    private ResponseEntity validateSignUp(CreateAccountRequest createAccountRequest){
+    private ResponseEntity<GeneralResponse<Object>> validateSignUp(CreateAccountRequest createAccountRequest){
         if (!validRequest.formatUsernameAndPassword(createAccountRequest.getUsername()))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.USERNAME_ERROR);
         if (findUsername(createAccountRequest.getUsername()))
@@ -148,8 +149,8 @@ public class UserServiceImplement implements UserService{
     }
 
     @Override
-    public ResponseEntity signupAccount(CreateAccountRequest createAccountRequest){
-        ResponseEntity validateResult = validateSignUp(createAccountRequest);
+    public ResponseEntity<GeneralResponse<Object>> signupAccount(CreateAccountRequest createAccountRequest){
+        ResponseEntity<GeneralResponse<Object>> validateResult = validateSignUp(createAccountRequest);
         if (validateResult != null) return validateResult;
         return addAccount(createAccountRequest);
     }

@@ -39,7 +39,7 @@ public class TemplateServiceImplement implements TemplateService {
     }
 
     @Override
-    public Optional<InvitaTemplate> getTemplateByTemplateId(Long templateId){
+    public InvitaTemplate getTemplateByTemplateId(Long templateId){
         return invitaTemplateRepository.findInvitaTemplateById(templateId);
     }
 
@@ -53,7 +53,7 @@ public class TemplateServiceImplement implements TemplateService {
 
     @Override
     public void changeTemplate(CreateTemplateRequest createTemplateRequest, Long templateId){
-        InvitaTemplate invitaTemplate = invitaTemplateRepository.findInvitaTemplateById(templateId).get();
+        InvitaTemplate invitaTemplate = invitaTemplateRepository.findInvitaTemplateById(templateId);
         invitaTemplate.setCreateTemplateRequest(createTemplateRequest);
         invitaTemplateRepository.save(invitaTemplate);
     }

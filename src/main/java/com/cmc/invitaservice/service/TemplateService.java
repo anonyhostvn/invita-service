@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface TemplateService {
     GetAllTemplateResponse getAllTemplate();
     void deleteTemplate(Long id);
-    Optional<InvitaTemplate> getTemplateByTemplateId(Long id);
+    InvitaTemplate getTemplateByTemplateId(Long id);
     InvitaTemplate addTemplate(CreateTemplateRequest createTemplateRequest);
     void changeTemplate(CreateTemplateRequest createTemplateRequest, Long id);
 }
