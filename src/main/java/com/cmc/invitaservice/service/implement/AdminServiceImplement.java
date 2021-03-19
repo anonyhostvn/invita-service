@@ -51,7 +51,7 @@ public class AdminServiceImplement implements AdminService {
         ApplicationUser applicationUser = applicationUserRepository.findApplicationUserById(userId);
         if (applicationUser == null)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_EXIST);
-        if (applicationUser.getEmail() == null)
+        if (userId == 1)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_UPDATE_ADMIN);
         applicationUserRepository.deleteById(userId);
         return ResponseFactory.success("delete succesfully");
@@ -68,14 +68,15 @@ public class AdminServiceImplement implements AdminService {
 
     @Override
     public ResponseEntity<GeneralResponse<Object>> changeUserById(Long userId, UpdateAccountRequest updateAccountRequest){
+        if (userId == 1)
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_UPDATE_ADMIN);
+
         ResponseEntity<GeneralResponse<Object>> validateResult = validateSignUp(updateAccountRequest);
         if (validateResult != null) return validateResult;
 
         ApplicationUser applicationUser = applicationUserRepository.findApplicationUserById(userId);
         if (applicationUser == null)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_EXIST);
-        if (applicationUser.getEmail() == null)
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_UPDATE_ADMIN);
         applicationUser.setUpdateAccountRequest(updateAccountRequest);
         applicationUser.setPassword(bCryptPasswordEncoder.encode(updateAccountRequest.getPassword()));
         applicationUserRepository.save(applicationUser);

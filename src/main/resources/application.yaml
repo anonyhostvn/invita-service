@@ -15,9 +15,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://13.67.53.166:3306/invita
+    url: jdbc:mysql://${DATABASE_SERVER:localhost:3306}/invita
     username: root
-    password: 123456789
+    password:
   jpa:
     hibernate:
       ddl-auto: none

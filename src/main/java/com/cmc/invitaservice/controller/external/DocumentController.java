@@ -33,25 +33,27 @@ public class DocumentController {
     }
 
     @DeleteMapping("/document/{documentId}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<GeneralResponse<Object>> deleteDocument(@PathVariable(name="documentId") Long documentId){
-        documentService.deleteDocument(documentId);
-        return ResponseFactory.success();
+        return documentService.deleteDocument(documentId);
     }
 
     @GetMapping("/document/{documentId}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public  ResponseEntity<GeneralResponse<Object>> getDocumentByName(@PathVariable(name="documentId") Long documentId){
-        return ResponseFactory.success(documentService.getDocumentById(documentId));
+        return documentService.getDocumentById(documentId);
     }
 
     @PostMapping("document")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<GeneralResponse<Object>> addDocument(@RequestBody CreateDocumentRequest createDocumentRequest){
-        return ResponseFactory.success(documentService.addDocument(createDocumentRequest));
+        return documentService.addDocument(createDocumentRequest);
     }
 
     @PutMapping("/document/{documentId}")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public  ResponseEntity<GeneralResponse<Object>> editDocument(@PathVariable(name="documentId") Long documentId,
                                         @RequestBody UpdateDocumentRequest updateDocumentRequest) {
-            documentService.changeDocument(updateDocumentRequest, documentId);
-            return ResponseFactory.success(documentService.getDocumentById(documentId));
+            return documentService.changeDocument(updateDocumentRequest, documentId);
     }
 }

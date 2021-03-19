@@ -4,11 +4,9 @@ import com.cmc.invitaservice.models.external.request.CreateTemplateRequest;
 import com.cmc.invitaservice.models.external.response.GetAllTemplateResponse;
 import com.cmc.invitaservice.response.GeneralResponse;
 import com.cmc.invitaservice.response.ResponseFactory;
-import com.cmc.invitaservice.response.ResponseStatusEnum;
 import com.cmc.invitaservice.service.TemplateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 public class TemplateController {
 
-    private TemplateService templateService;
+    private final TemplateService templateService;
 
     @Autowired
     public TemplateController(TemplateService templateService) {
@@ -36,32 +34,27 @@ public class TemplateController {
     }
 
     @DeleteMapping("/template/{templateId}")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity deleteTemplate(@PathVariable (name = "templateId") Long templateId){
-        templateService.deleteTemplate(templateId);
-        return ResponseFactory.success();
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<GeneralResponse<Object>> deleteTemplate(@PathVariable (name = "templateId") Long templateId){
+        return templateService.deleteTemplate(templateId);
     }
 
     @GetMapping("/template/{templateId}")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity getTemplateById(@PathVariable(name="templateId") Long templateId){
-        return ResponseFactory.success(templateService.getTemplateByTemplateId(templateId));
+    public ResponseEntity<GeneralResponse<Object>> getTemplateById(@PathVariable(name="templateId") Long templateId){
+        return templateService.getTemplateByTemplateId(templateId);
     }
 
     @PostMapping("/template")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity addTemplate(@RequestBody CreateTemplateRequest createTemplateRequest){
-        return ResponseFactory.success(templateService.addTemplate(createTemplateRequest));
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<GeneralResponse<Object>> addTemplate(@RequestBody CreateTemplateRequest createTemplateRequest){
+        return templateService.addTemplate(createTemplateRequest);
     }
 
     @PutMapping("/template/{templateId}")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public  ResponseEntity editTemplate(@PathVariable(name="templateId") Long templateId,
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<GeneralResponse<Object>> editTemplate(@PathVariable(name="templateId") Long templateId,
                                         @RequestBody CreateTemplateRequest createTemplateRequest) {
-        if (templateService.getTemplateByTemplateId(templateId) != null){
-            templateService.changeTemplate(createTemplateRequest, templateId);
-            return ResponseFactory.success(templateService.getTemplateByTemplateId(templateId));
-        }
-        return ResponseFactory.error(HttpStatus.valueOf("200"), ResponseStatusEnum.UNKNOWN_ERROR);
+        return templateService.changeTemplate(createTemplateRequest, templateId);
     }
 }

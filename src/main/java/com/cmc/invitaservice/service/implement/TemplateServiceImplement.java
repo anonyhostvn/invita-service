@@ -4,9 +4,14 @@ import com.cmc.invitaservice.models.external.request.CreateTemplateRequest;
 import com.cmc.invitaservice.models.external.response.GetAllTemplateResponse;
 import com.cmc.invitaservice.repositories.InvitaTemplateRepository;
 import com.cmc.invitaservice.repositories.entities.InvitaTemplate;
+import com.cmc.invitaservice.response.GeneralResponse;
+import com.cmc.invitaservice.response.ResponseFactory;
+import com.cmc.invitaservice.response.ResponseStatusEnum;
 import com.cmc.invitaservice.service.TemplateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,27 +38,32 @@ public class TemplateServiceImplement implements TemplateService {
     }
 
     @Override
-    public void deleteTemplate(Long id){
+    public ResponseEntity<GeneralResponse<Object>> deleteTemplate(Long id){
         invitaTemplateRepository.deleteById(id);
+        return ResponseFactory.success();
     }
 
     @Override
-    public InvitaTemplate getTemplateByTemplateId(Long templateId){
-        return invitaTemplateRepository.findInvitaTemplateById(templateId);
+    public ResponseEntity<GeneralResponse<Object>> getTemplateByTemplateId(Long templateId){
+        InvitaTemplate invitaTemplate = invitaTemplateRepository.findInvitaTemplateById(templateId);
+        return ResponseFactory.success(invitaTemplate);
     }
 
     @Override
-    public InvitaTemplate addTemplate(CreateTemplateRequest createTemplateRequest){
+    public ResponseEntity<GeneralResponse<Object>> addTemplate(CreateTemplateRequest createTemplateRequest){
         InvitaTemplate invitaTemplate = new InvitaTemplate();
         invitaTemplate.setCreateTemplateRequest(createTemplateRequest);
         invitaTemplateRepository.save(invitaTemplate);
-        return invitaTemplate;
+        return ResponseFactory.success(invitaTemplate);
     }
 
     @Override
-    public void changeTemplate(CreateTemplateRequest createTemplateRequest, Long templateId){
+    public ResponseEntity<GeneralResponse<Object>> changeTemplate(CreateTemplateRequest createTemplateRequest, Long templateId){
         InvitaTemplate invitaTemplate = invitaTemplateRepository.findInvitaTemplateById(templateId);
+        if (invitaTemplate == null)
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
         invitaTemplate.setCreateTemplateRequest(createTemplateRequest);
         invitaTemplateRepository.save(invitaTemplate);
+        return ResponseFactory.success(invitaTemplate);
     }
 }
