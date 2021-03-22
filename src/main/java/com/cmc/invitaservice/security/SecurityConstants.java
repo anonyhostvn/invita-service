@@ -8,4 +8,5 @@ public class SecurityConstants {
     public static final String SIGN_UP_URL = "/auth/sign-up";
     public static final String LOGIN_URL = "/auth/login";
     public static final String FORGOT_PASSWORD_URL = "/auth/resetpassword";
+    public static final String MANAGEMENT_MAIL = "binhtp27112000@gmail.com";
 }

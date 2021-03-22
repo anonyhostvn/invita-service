@@ -17,7 +17,7 @@ import com.cmc.invitaservice.response.ResponseFactory;
 import com.cmc.invitaservice.response.ResponseStatusEnum;
 import com.cmc.invitaservice.security.filter.JWT.JwtUtils;
 import com.cmc.invitaservice.security.filter.service.UserDetailsImplement;
-import com.cmc.invitaservice.service.EmailService;
+import com.cmc.invitaservice.mailsender.EmailService;
 import com.cmc.invitaservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.cmc.invitaservice.security.SecurityConstants.MANAGEMENT_MAIL;
 
 @Service
 @Slf4j
@@ -148,10 +150,10 @@ public class UserServiceImplement implements UserService{
         PasswordResetToken myToken = new PasswordResetToken(token, applicationUser);
         passwordResetTokenRepository.save(myToken);
         String appUrl = request.getScheme() + "://" + request.getServerName();
-        emailService.sendEmail("binhtp27112000@gmail.com",
+        emailService.sendEmail(MANAGEMENT_MAIL,
                 applicationUser.getEmail(),
                 "Password Reset Request",
-                "To reset your password, click the link below:\n" + appUrl + "/reset?token=" + myToken);
-        return ResponseFactory.success("A password reset link has been sent to" + applicationUser.getUsername());
+                "To reset your password, click the link below:\n" + appUrl + "/reset?token=" + token);
+        return ResponseFactory.success("A password reset link has been sent to " + applicationUser.getUsername());
     }
 }

@@ -1,4 +1,4 @@
-package com.cmc.invitaservice.models.external.request;
+package com.cmc.invitaservice.mailsender.Implement;
 
 
 import org.springframework.context.annotation.Bean;
@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 
+import static com.cmc.invitaservice.security.SecurityConstants.MANAGEMENT_MAIL;
+
 @Configuration
 public class MailConfig {
     @Bean
@@ -17,7 +19,7 @@ public class MailConfig {
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
 
-        mailSender.setUsername("binhtp27112000@gmail.com");
+        mailSender.setUsername(MANAGEMENT_MAIL);
         mailSender.setPassword("binh0906217628");
 
         Properties props = mailSender.getJavaMailProperties();
