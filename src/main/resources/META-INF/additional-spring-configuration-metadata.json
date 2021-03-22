@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "spring.spring.mail.properties.mail.smtp.starttls",
+      "type": "java.lang.String",
+      "description": "Description for spring.spring.mail.properties.mail.smtp.starttls."
+  }
+] }

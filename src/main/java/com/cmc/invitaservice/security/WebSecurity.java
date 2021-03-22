@@ -21,8 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static com.cmc.invitaservice.security.SecurityConstants.LOGIN_URL;
-import static com.cmc.invitaservice.security.SecurityConstants.SIGN_UP_URL;
+import static com.cmc.invitaservice.security.SecurityConstants.*;
 
 @Configuration
 @EnableWebSecurity
@@ -59,6 +58,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                 .antMatchers(HttpMethod.POST, LOGIN_URL).permitAll()
+                .antMatchers(HttpMethod.POST, FORGOT_PASSWORD_URL).permitAll()
                 .anyRequest().authenticated();
         http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
