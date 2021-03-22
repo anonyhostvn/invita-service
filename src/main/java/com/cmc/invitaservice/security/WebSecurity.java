@@ -59,6 +59,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                 .antMatchers(HttpMethod.POST, LOGIN_URL).permitAll()
                 .antMatchers(HttpMethod.POST, FORGOT_PASSWORD_URL).permitAll()
+                .antMatchers(HttpMethod.POST, RESET_PASSWORD_URL).permitAll()
+                .antMatchers(HttpMethod.POST, VERIFY_URL).permitAll()
                 .anyRequest().authenticated();
         http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }

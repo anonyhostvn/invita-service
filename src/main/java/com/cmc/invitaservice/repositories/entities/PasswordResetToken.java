@@ -38,18 +38,13 @@ public class PasswordResetToken{
     public PasswordResetToken(String token, ApplicationUser applicationUser){
         this.token = token;
         this.applicationUser = applicationUser;
-        this.expiryDate = calculateExpiryDate(EXPIRATION_TIME_RESET);
+        this.expiryDate = calculateExpiryDate();
     }
 
-    public PasswordResetToken(String token){
-        this.token = token;
-        this.expiryDate = calculateExpiryDate(EXPIRATION_TIME_RESET);
-    }
-
-    private Date calculateExpiryDate(final int expiryTimeInMinutes) {
+    private Date calculateExpiryDate() {
         final Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(new Date().getTime());
-        cal.add(Calendar.MINUTE, expiryTimeInMinutes);
+        cal.add(Calendar.MINUTE, EXPIRATION_TIME_RESET);
         return new Date(cal.getTime().getTime());
     }
 }

@@ -5,9 +5,10 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 @Data
-public class ResetPasswordRequest {
+public class ForgotPasswordRequest {
     @NotBlank
-    private String password;
+    private String username;
     @NotBlank
-    private String retypePassword;
+    private String email;
 }
+

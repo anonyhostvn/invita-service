@@ -1,6 +1,7 @@
 package com.cmc.invitaservice.controller.internal;
 
 import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
+import com.cmc.invitaservice.models.external.request.ForgotPasswordRequest;
 import com.cmc.invitaservice.models.external.request.LoginRequest;
 import com.cmc.invitaservice.models.external.request.ResetPasswordRequest;
 import com.cmc.invitaservice.response.GeneralResponse;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Map;
 
 @CrossOrigin(value = "*")
 @Slf4j
@@ -25,17 +27,28 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<GeneralResponse<Object>> signUp(@RequestBody CreateAccountRequest createAccountRequest){
-        return userService.signupAccount(createAccountRequest);
+    public ResponseEntity<GeneralResponse<Object>> signUp(@RequestBody CreateAccountRequest createAccountRequest, HttpServletRequest request){
+        return userService.signupAccount(createAccountRequest,request);
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<GeneralResponse<Object>> verify(@RequestParam Map<String, String> requestParam){
+        return userService.verifySignUp(requestParam);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<GeneralResponse<Object>> login(@Valid  @RequestBody LoginRequest loginRequest){
+    public ResponseEntity<GeneralResponse<Object>> login(@Valid @RequestBody LoginRequest loginRequest){
         return userService.loginAccount(loginRequest);
     }
 
-    @PostMapping("/resetpassword")
-    public ResponseEntity<GeneralResponse<Object>> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest, HttpServletRequest httpServletRequest){
-        return userService.resetPassword(resetPasswordRequest,httpServletRequest);
+    @PostMapping("/forgot")
+    public ResponseEntity<GeneralResponse<Object>> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest, HttpServletRequest httpServletRequest){
+        return userService.forgotPassword(forgotPasswordRequest,httpServletRequest);
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<GeneralResponse<Object>> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest,
+                                                                 @RequestParam Map<String, String> requestParam){
+        return userService.resetPassword(resetPasswordRequest,requestParam);
     }
 }

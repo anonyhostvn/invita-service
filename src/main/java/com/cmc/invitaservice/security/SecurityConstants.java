@@ -7,6 +7,8 @@ public class SecurityConstants {
     public static final String HEADER_STRING = "Authorization";
     public static final String SIGN_UP_URL = "/auth/sign-up";
     public static final String LOGIN_URL = "/auth/login";
-    public static final String FORGOT_PASSWORD_URL = "/auth/resetpassword";
-    public static final String MANAGEMENT_MAIL = "binhtp27112000@gmail.com";
+    public static final String FORGOT_PASSWORD_URL = "/auth/forgot";
+    public static final String RESET_PASSWORD_URL = "/auth/reset";
+    public static final String MANAGEMENT_MAIL = "username@gmail.com";
+    public static final String VERIFY_URL = "/auth/verify";
 }
