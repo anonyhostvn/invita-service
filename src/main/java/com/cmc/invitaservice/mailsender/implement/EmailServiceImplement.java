@@ -1,4 +1,4 @@
-package com.cmc.invitaservice.mailsender.Implement;
+package com.cmc.invitaservice.mailsender.implement;
 
 import com.cmc.invitaservice.mailsender.EmailService;
 import org.springframework.mail.SimpleMailMessage;

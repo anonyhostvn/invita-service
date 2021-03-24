@@ -157,6 +157,7 @@ public class UserServiceImplement implements UserService{
             return ResponseFactory.error(HttpStatus.valueOf(403), ResponseStatusEnum.UNKNOWN_ERROR);
         CreateAccountRequest createAccountRequest = new CreateAccountRequest();
         createAccountRequest.setAccount(verifyUserToken);
+        verifyUserTokenRepository.deleteById(verifyUserToken.getId());
         return addAccount(createAccountRequest);
     }
 
@@ -196,5 +197,11 @@ public class UserServiceImplement implements UserService{
         applicationUserRepository.save(applicationUser);
         passwordResetTokenRepository.deleteById(passwordResetToken.getId());
         return ResponseFactory.success("Password has changed !");
+    }
+
+    @Override
+    public ResponseEntity<GeneralResponse<Object>> logoutAccount(){
+
+        return ResponseFactory.success("Logout successfully");
     }
 }

@@ -51,4 +51,9 @@ public class UserController {
                                                                  @RequestParam Map<String, String> requestParam){
         return userService.resetPassword(resetPasswordRequest,requestParam);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<GeneralResponse<Object>> logout(){
+        return userService.logoutAccount();
+    }
 }

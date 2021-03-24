@@ -9,6 +9,7 @@ import java.util.Map;
 
 public interface UserService {
     ResponseEntity<GeneralResponse<Object>> loginAccount(LoginRequest loginRequest);
+    ResponseEntity<GeneralResponse<Object>> logoutAccount();
     ResponseEntity<GeneralResponse<Object>> verifySignUp(Map<String, String> requestParam);
     ResponseEntity<GeneralResponse<Object>> changePassword(ChangePasswordRequest changePasswordRequest);
     ResponseEntity<GeneralResponse<Object>> signupAccount(CreateAccountRequest createAccountRequest, HttpServletRequest request);

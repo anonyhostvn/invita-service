@@ -1,4 +1,4 @@
-package com.cmc.invitaservice.mailsender.Implement;
+package com.cmc.invitaservice.mailsender.implement;
 
 
 import org.springframework.context.annotation.Bean;
@@ -19,7 +19,7 @@ public class MailConfig {
         mailSender.setPort(587);
 
         mailSender.setUsername(MANAGEMENT_MAIL);
-        mailSender.setPassword("password");
+        mailSender.setPassword("invitacmcapp_Password");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
