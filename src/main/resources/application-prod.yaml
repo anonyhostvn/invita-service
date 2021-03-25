@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jndi-name: invita-sdb
+
+server:
+  port: 8088
+  servlet:
+    context-path: /backend

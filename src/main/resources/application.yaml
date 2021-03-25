@@ -14,15 +14,8 @@
 
 
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DATABASE_SERVER:13.76.138.225:3306}/invita
-    username: root
-    password: 123456789
-
-  jpa:
-    hibernate:
-      ddl-auto: none
+  profiles:
+    active: prod
 
 
 
