@@ -5,6 +5,7 @@ import com.cmc.invitaservice.repositories.entities.ApplicationUser;
 import com.cmc.invitaservice.response.GeneralResponse;
 import com.cmc.invitaservice.response.ResponseFactory;
 import com.cmc.invitaservice.response.ResponseStatusEnum;
+import org.hibernate.tool.schema.internal.exec.GenerationTarget;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -101,14 +102,18 @@ public class ValidationService {
                                                                 String email) {
         if (!formatUsernameAndPassword(username))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.USERNAME_ERROR);
-        if (findUsername(username))
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.USER_EXIST);
         if (!formatUsernameAndPassword(password))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.PASSWORD_ERROR);
         if (!formatName(firstname, lasname))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NAME_ERROR);
         if (!formatEmail(email))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.EMAIL_ERROR);
+        return validExist(username, email);
+    }
+
+    public ResponseEntity<GeneralResponse<Object>> validExist(String username, String email){
+        if (findUsername(username))
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.USER_EXIST);
         if (findEmail(email))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.EMAIL_EXIST);
         return null;

@@ -150,6 +150,8 @@ public class UserServiceImplement implements UserService{
             return ResponseFactory.error(HttpStatus.valueOf(403), ResponseStatusEnum.UNKNOWN_ERROR);
         CreateAccountRequest createAccountRequest = new CreateAccountRequest();
         createAccountRequest.setAccount(verifyUserToken);
+        ResponseEntity<GeneralResponse<Object>> validateResult = validationService.validExist(createAccountRequest.getUsername(), createAccountRequest.getEmail());
+        if (validateResult != null) return validateResult;
         return addAccount(createAccountRequest);
     }
 
