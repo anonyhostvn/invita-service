@@ -31,7 +31,7 @@ public class UserController {
         return userService.signupAccount(createAccountRequest,request);
     }
 
-    @PostMapping("/verify")
+    @GetMapping("/verify")
     public ResponseEntity<GeneralResponse<Object>> verify(@RequestParam Map<String, String> requestParam){
         return userService.verifySignUp(requestParam);
     }

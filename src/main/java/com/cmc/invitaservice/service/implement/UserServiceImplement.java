@@ -63,7 +63,7 @@ public class UserServiceImplement implements UserService{
         this.verifyUserTokenRepository = verifyUserTokenRepository;
     }
 
-    public ResponseEntity<GeneralResponse<Object>> addAccount(CreateAccountRequest createAccountRequest){
+    private ResponseEntity<GeneralResponse<Object>> addAccount(CreateAccountRequest createAccountRequest){
         Set<Role> roles = new HashSet<>();
         ApplicationUser applicationUser = new ApplicationUser();
         applicationUser.setCreateAccountRequest(createAccountRequest);
@@ -126,16 +126,10 @@ public class UserServiceImplement implements UserService{
                 createAccountRequest.getEmail());
     }
 
-    private void filterVerify(){
-        Date date = new Date(System.currentTimeMillis());
-        verifyUserTokenRepository.deleteVerifyUserTokensByExpiryDateLessThan(date);
-    }
-
     @Override
     public ResponseEntity<GeneralResponse<Object>> signupAccount(CreateAccountRequest createAccountRequest, HttpServletRequest request){
         ResponseEntity<GeneralResponse<Object>> validateResult = validateSignUp(createAccountRequest);
         if (validateResult != null) return validateResult;
-        filterVerify();
         String token = UUID.randomUUID().toString();
         VerifyUserToken myToken = new VerifyUserToken(token, createAccountRequest);
         myToken.setPassword(bCryptPasswordEncoder.encode(createAccountRequest.getPassword()));
@@ -150,7 +144,6 @@ public class UserServiceImplement implements UserService{
 
     @Override
     public ResponseEntity<GeneralResponse<Object>> verifySignUp(Map<String, String> requestParam){
-        filterVerify();
         String token = requestParam.get("token");
         VerifyUserToken verifyUserToken = verifyUserTokenRepository.findByToken(token);
         if (verifyUserToken == null)
@@ -160,17 +153,11 @@ public class UserServiceImplement implements UserService{
         return addAccount(createAccountRequest);
     }
 
-    private void filterToken(){
-        Date date = new Date(System.currentTimeMillis());
-        passwordResetTokenRepository.deletePasswordResetTokensByExpiryDateLessThan(date);
-    }
-
     @Override
     public ResponseEntity<GeneralResponse<Object>> forgotPassword(ForgotPasswordRequest forgotPasswordRequest, HttpServletRequest request){
         ApplicationUser applicationUser = applicationUserRepository.findByEmail(forgotPasswordRequest.getEmail());
         if (applicationUser == null)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_EXIST);
-        filterToken();
         String token = UUID.randomUUID().toString();
         PasswordResetToken myToken = new PasswordResetToken(token, applicationUser);
         passwordResetTokenRepository.save(myToken);
@@ -184,7 +171,6 @@ public class UserServiceImplement implements UserService{
 
     @Override
     public ResponseEntity<GeneralResponse<Object>> resetPassword(ResetPasswordRequest resetPasswordRequest, Map<String, String> requestParam ) {
-        filterToken();
         String token = requestParam.get("token");
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
         if (passwordResetToken == null)
