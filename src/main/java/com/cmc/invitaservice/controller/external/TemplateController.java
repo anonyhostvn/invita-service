@@ -1,9 +1,7 @@
 package com.cmc.invitaservice.controller.external;
 
 import com.cmc.invitaservice.models.external.request.CreateTemplateRequest;
-import com.cmc.invitaservice.models.external.response.GetAllTemplateResponse;
 import com.cmc.invitaservice.response.GeneralResponse;
-import com.cmc.invitaservice.response.ResponseFactory;
 import com.cmc.invitaservice.service.TemplateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +27,8 @@ public class TemplateController {
 
     @GetMapping("/template")
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-    public ResponseEntity<GeneralResponse<GetAllTemplateResponse>> getAllTemplate() {
-        return ResponseFactory.success(templateService.getAllTemplate());
+    public ResponseEntity<GeneralResponse<Object>> getAllTemplate() {
+        return templateService.getAllTemplate();
     }
 
     @DeleteMapping("/template/{templateId}")

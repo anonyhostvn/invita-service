@@ -3,10 +3,7 @@ package com.cmc.invitaservice.service.implement;
 import com.cmc.invitaservice.mailsender.EmailService;
 import com.cmc.invitaservice.models.external.request.*;
 import com.cmc.invitaservice.models.external.response.LoginResponse;
-import com.cmc.invitaservice.repositories.ApplicationUserRepository;
-import com.cmc.invitaservice.repositories.PasswordResetTokenRepository;
-import com.cmc.invitaservice.repositories.RoleRepository;
-import com.cmc.invitaservice.repositories.VerifyUserTokenRepository;
+import com.cmc.invitaservice.repositories.*;
 import com.cmc.invitaservice.repositories.entities.*;
 import com.cmc.invitaservice.response.GeneralResponse;
 import com.cmc.invitaservice.response.ResponseFactory;
@@ -46,12 +43,13 @@ public class UserServiceImplement implements UserService{
     private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private final JwtUtils jwtUtils;
 
     private final EmailService emailService;
     private final VerifyUserTokenRepository verifyUserTokenRepository;
-    public UserServiceImplement(ApplicationUserRepository applicationUserRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, ValidationService validationService, PasswordResetTokenRepository passwordResetTokenRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils, EmailService emailService, VerifyUserTokenRepository verifyUserTokenRepository) {
+    public UserServiceImplement(ApplicationUserRepository applicationUserRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository, ValidationService validationService, PasswordResetTokenRepository passwordResetTokenRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils, EmailService emailService, VerifyUserTokenRepository verifyUserTokenRepository, RefreshTokenRepository refreshTokenRepository) {
         this.applicationUserRepository = applicationUserRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.roleRepository = roleRepository;
@@ -61,6 +59,7 @@ public class UserServiceImplement implements UserService{
         this.jwtUtils = jwtUtils;
         this.emailService = emailService;
         this.verifyUserTokenRepository = verifyUserTokenRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     private ResponseEntity<GeneralResponse<Object>> addAccount(CreateAccountRequest createAccountRequest){
@@ -100,18 +99,19 @@ public class UserServiceImplement implements UserService{
     public ResponseEntity<GeneralResponse<Object>> loginAccount(LoginRequest loginRequest){
         ResponseEntity<GeneralResponse<Object>> loginResult = checkAccount(loginRequest);
         if (loginResult != null) return loginResult;
-
+        if (refreshTokenRepository.findByUsername(loginRequest.getUsername()) != null)
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.ACCOUNT_LOGGED_IN);
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJWT(authentication);
-
+        String jwt1 = jwtUtils.generateRefreshToken(authentication);
         UserDetailsImplement userDetailsImplement = (UserDetailsImplement) authentication.getPrincipal();
         List<String> roles = userDetailsImplement.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        LoginResponse loginResponse = new LoginResponse(jwt, userDetailsImplement.getId(), userDetailsImplement.getUsername(), userDetailsImplement.getEmail(), roles);
+        LoginResponse loginResponse = new LoginResponse(jwt1, jwt, userDetailsImplement.getId(), userDetailsImplement.getUsername(), userDetailsImplement.getEmail(), roles);
         return ResponseFactory.success(loginResponse, LoginResponse.class);
     }
 
@@ -184,5 +184,12 @@ public class UserServiceImplement implements UserService{
         applicationUserRepository.save(applicationUser);
         passwordResetTokenRepository.deleteById(passwordResetToken.getId());
         return ResponseFactory.success("Password has changed !");
+    }
+
+    @Override
+    public ResponseEntity<GeneralResponse<Object>> logoutAccount(){
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        refreshTokenRepository.deleteByUsername(userDetails.getUsername());
+        return ResponseFactory.success("Logout successfully!");
     }
 }

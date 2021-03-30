@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class LoginResponse {
+    private String refreshToken;
     private String token;
     private String type = "Bearer";
     private Long id;
@@ -13,7 +14,8 @@ public class LoginResponse {
     private  String email;
     private List<String> roles;
 
-    public LoginResponse(String token, Long id, String username, String email, List<String> roles) {
+    public LoginResponse(String refreshToken, String token, Long id, String username, String email, List<String> roles) {
+        this.refreshToken = refreshToken;
         this.token = token;
         this.id = id;
         this.username =username;

@@ -18,7 +18,7 @@ import java.util.Date;
 public class PasswordResetToken{
     private static final long serialVersionUID = -1088727601152369294L;
 
-    public static final int EXPIRATION_TIME_RESET = 15;
+    public static final int EXPIRATION_TIME_RESET = 5;
 
     @Id
     @Column(name = "id")

@@ -1,9 +1,7 @@
 package com.cmc.invitaservice.controller.external;
 
 import com.cmc.invitaservice.models.external.request.UpdateAccountRequest;
-import com.cmc.invitaservice.models.external.response.GetAllApplicationUserResponse;
 import com.cmc.invitaservice.response.GeneralResponse;
-import com.cmc.invitaservice.response.ResponseFactory;
 import com.cmc.invitaservice.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -24,8 +22,8 @@ public class AdminController {
     }
 
     @GetMapping(path = "/user/all")
-    public ResponseEntity<GeneralResponse<GetAllApplicationUserResponse>> getAllAccount(){
-        return ResponseFactory.success(adminService.getAllAccount());
+    public ResponseEntity<GeneralResponse<Object>> getAllAccount(){
+        return adminService.getAllAccount();
     }
 
     @GetMapping("/user/{userId}")

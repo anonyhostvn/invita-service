@@ -20,7 +20,7 @@ import java.util.Date;
 public class VerifyUserToken{
     private static final long serialVersionUID = -6741886447122081418L;
 
-    public static final int EXPIRATION_TIME_RESET = 15;
+    public static final int EXPIRATION_TIME_RESET = 5;
 
     @Id
     @Column(name = "id")

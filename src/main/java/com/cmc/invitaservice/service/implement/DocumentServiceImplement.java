@@ -6,6 +6,7 @@ import com.cmc.invitaservice.models.external.response.GetAllDocumentResponse;
 import com.cmc.invitaservice.repositories.ApplicationUserRepository;
 import com.cmc.invitaservice.repositories.InvitaDocumentRepository;
 import com.cmc.invitaservice.repositories.InvitaTemplateRepository;
+import com.cmc.invitaservice.repositories.RefreshTokenRepository;
 import com.cmc.invitaservice.repositories.entities.ApplicationUser;
 import com.cmc.invitaservice.repositories.entities.InvitaDocument;
 import com.cmc.invitaservice.response.GeneralResponse;
@@ -29,37 +30,44 @@ public class DocumentServiceImplement implements DocumentService {
     private final ApplicationUserRepository applicationUserRepository;
     private final InvitaTemplateRepository invitaTemplateRepository;
     private final RoleService roleService;
-
+    private final RefreshTokenRepository refreshTokenRepository;
     @Autowired
     public DocumentServiceImplement(InvitaDocumentRepository invitaDocumentRepository,
                                     ApplicationUserRepository applicationUserRepository,
                                     InvitaTemplateRepository invitaTemplateRepository,
-                                    RoleService roleService){
+                                    RoleService roleService, RefreshTokenRepository refreshTokenRepository){
         this.invitaDocumentRepository = invitaDocumentRepository;
         this.applicationUserRepository = applicationUserRepository;
         this.invitaTemplateRepository = invitaTemplateRepository;
         this.roleService = roleService;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @Override
-    public GetAllDocumentResponse getAllDocument(){
+    public ResponseEntity<GeneralResponse<Object>> getAllDocument(){
         List<InvitaDocument> invitaDocumentList;
         if (roleService.hasRole("ROLE_ADMIN")){
+            if (refreshTokenRepository.findByUsername("admin") == null)
+                return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
             invitaDocumentList = invitaDocumentRepository.findAll();
         }
         else {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String username = userDetails.getUsername();
+            if (refreshTokenRepository.findByUsername(username) == null)
+                return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
             invitaDocumentList = invitaDocumentRepository.findInvitaDocumentByApplicationUserUsername(username);
         }
         GetAllDocumentResponse getAllDocumentResponse = new GetAllDocumentResponse();
         getAllDocumentResponse.setListDocument(invitaDocumentList);
-        return getAllDocumentResponse;
+        return ResponseFactory.success(getAllDocumentResponse);
     }
 
     @Override
     public ResponseEntity<GeneralResponse<Object>> deleteDocument(Long id) {
         if (roleService.hasRole("ROLE_ADMIN")) {
+            if (refreshTokenRepository.findByUsername("admin") == null)
+                return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
             invitaDocumentRepository.deleteById(id);
             return ResponseFactory.success("Delete successfully");
         }
@@ -68,6 +76,8 @@ public class DocumentServiceImplement implements DocumentService {
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_EXIST);
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
+        if (refreshTokenRepository.findByUsername(username) == null)
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
         if (invitaDocument.getApplicationUser().getUsername().equals(username)) {
             invitaDocumentRepository.deleteById(id);
             return ResponseFactory.success("Delete successfully");
@@ -77,11 +87,16 @@ public class DocumentServiceImplement implements DocumentService {
 
     @Override
     public ResponseEntity<GeneralResponse<Object>> getDocumentById(Long documentId){
-        if (roleService.hasRole("ROLE_ADMIN"))
+        if (roleService.hasRole("ROLE_ADMIN")) {
+            if (refreshTokenRepository.findByUsername("admin") == null)
+                return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
             return ResponseFactory.success(invitaDocumentRepository.findInvitaDocumentById(documentId));
+        }
         InvitaDocument invitaDocument = invitaDocumentRepository.findInvitaDocumentById(documentId);
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
+        if (refreshTokenRepository.findByUsername(username) == null)
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
         if (invitaDocument.getApplicationUser().getUsername().equals(username))
             return ResponseFactory.success(invitaDocumentRepository.findInvitaDocumentById(documentId));
         return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
@@ -91,6 +106,8 @@ public class DocumentServiceImplement implements DocumentService {
     public ResponseEntity<GeneralResponse<Object>> addDocument(CreateDocumentRequest createDocumentRequest){
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
+        if (refreshTokenRepository.findByUsername(username) == null)
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
         ApplicationUser applicationUser = applicationUserRepository.findByUsername(username);
         InvitaDocument invitaDocument = new InvitaDocument();
         invitaDocument.setInvitaTemplate(invitaTemplateRepository.findInvitaTemplateById(createDocumentRequest.getTemplateId()));
@@ -102,9 +119,11 @@ public class DocumentServiceImplement implements DocumentService {
 
     @Override
     public ResponseEntity<GeneralResponse<Object>> changeDocument(UpdateDocumentRequest updateDocumentRequest, Long documentId){
-        InvitaDocument invitaDocument = invitaDocumentRepository.findInvitaDocumentById(documentId);
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
+        if (refreshTokenRepository.findByUsername(username) == null)
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
+        InvitaDocument invitaDocument = invitaDocumentRepository.findInvitaDocumentById(documentId);
         if (invitaDocument.getApplicationUser().getUsername().equals(username)) {
             invitaDocument.setInvitaTemplate(invitaTemplateRepository.findInvitaTemplateById(updateDocumentRequest.getTemplateId()));
             invitaDocument.setUpdateDocumentRequest(updateDocumentRequest);

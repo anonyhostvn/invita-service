@@ -5,7 +5,6 @@ import com.cmc.invitaservice.repositories.entities.ApplicationUser;
 import com.cmc.invitaservice.response.GeneralResponse;
 import com.cmc.invitaservice.response.ResponseFactory;
 import com.cmc.invitaservice.response.ResponseStatusEnum;
-import org.hibernate.tool.schema.internal.exec.GenerationTarget;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
