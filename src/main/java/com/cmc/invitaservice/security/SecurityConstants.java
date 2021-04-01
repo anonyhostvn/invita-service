@@ -3,7 +3,7 @@ package com.cmc.invitaservice.security;
 public class SecurityConstants {
     public static final String SECRET = "BinhLong";
     public static final String SECRET1 = "CMC1236547890";
-    public static final long EXPIRATION_TIME = 300_000;
+    public static final long EXPIRATION_TIME = 900_000;
     public static final long EXPIRATION_TIME_REFRESH = 604800_000;
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String HEADER_STRING = "Authorization";

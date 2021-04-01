@@ -54,16 +54,14 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             }
         } catch (ExpiredJwtException expiredJwtException){
             String token = parseJwt(request, "Refresh");
-            String jwt = parseJwt(request, HEADER_STRING);
             RefreshToken refreshToken = refreshTokenRepository.findByToken(token);
-            if (token !=null && refreshToken != null && jwtUtils.getUserNameFromJwtToken(jwt,SECRET).equals(refreshToken.getUsername())){
+            if (token !=null && refreshToken != null){
                 String username = jwtUtils.getUserNameFromJwtToken(token,SECRET1);
                 UserDetails userDetails = userDetailsServiceImplement.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                jwt = jwtUtils.generateJWT(authentication);
-
+                String jwt = jwtUtils.generateJWT(authentication);
                 response.getWriter().write(jwt);
                 response.getWriter().flush();
             }
