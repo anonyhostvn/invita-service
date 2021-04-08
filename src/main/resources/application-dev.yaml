@@ -1,3 +1,6 @@
+resetUrl: http://localhost:8080/backend/auth/reset?token=
+verifyUrl: http://localhost:8080/backend/auth/verify?token=
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -8,7 +11,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+
+  cache:
+    cache-names: password_reset_token, verify_user_token
+    caffeine:
+      spec: maximumSize=500,expireAfterAccess=300s
+
 server:
   port: 8080
   servlet:
     context-path: /backend
+

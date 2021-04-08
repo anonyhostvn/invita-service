@@ -1,6 +1,6 @@
 package com.cmc.invitaservice.models.external.request;
 
-import com.cmc.invitaservice.repositories.entities.VerifyUserToken;
+import com.cmc.invitaservice.cache.entities.VerifyUserToken;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
