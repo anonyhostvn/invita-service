@@ -17,8 +17,13 @@ spring:
     caffeine:
       spec: maximumSize=500,expireAfterAccess=300s
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
 server:
   port: 8080
   servlet:
     context-path: /backend
-
