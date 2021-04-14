@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import static com.cmc.invitaservice.security.SecurityConstants.MANAGEMENT_MAIL;
@@ -95,7 +96,16 @@ public class UserServiceImplement implements UserService{
         ApplicationUser applicationUser = applicationUserRepository.findByUsername(loginRequest.getUsername());
         if (applicationUser != null && new BCryptPasswordEncoder().matches(loginRequest.getPassword(), applicationUser.getPassword())) return null;
         return ResponseFactory.error(HttpStatus.valueOf(403), ResponseStatusEnum.WRONG_USERNAME_OR_PASSWORD);
+    }
 
+    private void sendMail(String mail, String url, String token){
+        CompletableFuture.runAsync(() ->
+                emailService.sendEmail(MANAGEMENT_MAIL,
+                        mail,
+                        "Password Reset Request",
+                        "To reset your password, click the link below:\n" + url + token)
+        );
+        log.info("Mail has been sent!");
     }
 
     @Override
@@ -152,10 +162,7 @@ public class UserServiceImplement implements UserService{
         String token = UUID.randomUUID().toString();
         createAccountRequest.setPassword(bCryptPasswordEncoder.encode(createAccountRequest.getPassword()));
         verifyUserTokenRepository.addVerifyUserToken(token, createAccountRequest);
-        emailService.sendEmail(MANAGEMENT_MAIL,
-                createAccountRequest.getEmail(),
-                "Verify Account Request",
-                "To start your registration, click the link below:\n" + verifyUrl + token);
+        sendMail(createAccountRequest.getEmail(), verifyUrl, token);
         return ResponseFactory.success("Waiting for verification");
     }
 
@@ -180,10 +187,7 @@ public class UserServiceImplement implements UserService{
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_EXIST);
         String token = UUID.randomUUID().toString();
         passwordResetTokenRepository.addPasswordResetToken(token, applicationUser.getId());
-        emailService.sendEmail(MANAGEMENT_MAIL,
-                applicationUser.getEmail(),
-                "Password Reset Request",
-                "To reset your password, click the link below:\n" + resetUrl + token);
+        sendMail(applicationUser.getEmail(), resetUrl, token);
         return ResponseFactory.success("A password reset link has been sent to " + applicationUser.getUsername());
     }
 
