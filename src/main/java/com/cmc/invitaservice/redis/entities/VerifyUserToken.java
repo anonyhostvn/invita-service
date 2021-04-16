@@ -1,19 +1,15 @@
-package com.cmc.invitaservice.cache.entities;
+package com.cmc.invitaservice.redis.entities;
 
 import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class VerifyUserToken{
+public class VerifyUserToken implements Serializable {
     private static final long serialVersionUID = -6741886447122081418L;
-
-    private String token;
 
     private String username;
 
@@ -25,8 +21,7 @@ public class VerifyUserToken{
 
     private  String email;
 
-    public VerifyUserToken(String token, CreateAccountRequest createAccountRequest){
-        this.token = token;
+    public VerifyUserToken(CreateAccountRequest createAccountRequest){
         this.username = createAccountRequest.getUsername();
         this.password = createAccountRequest.getPassword();
         this.firstName = createAccountRequest.getFirstName();

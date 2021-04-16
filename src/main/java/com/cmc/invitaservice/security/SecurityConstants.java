@@ -13,4 +13,5 @@ public class SecurityConstants {
     public static final String RESET_PASSWORD_URL = "/auth/reset";
     public static final String MANAGEMENT_MAIL = "invitacmcapp2021@gmail.com";
     public static final String VERIFY_URL = "/auth/verify";
+    public static final String VERIFY_KEY = "SECRET";
 }
