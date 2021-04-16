@@ -43,10 +43,13 @@ import static com.cmc.invitaservice.security.SecurityConstants.MANAGEMENT_MAIL;
 @Slf4j
 public class UserServiceImplement implements UserService{
 
-    @Value("${resetUrl}")
+    @Value("${token.resetUrl}")
     private String resetUrl;
 
-    @Value("${verifyUrl}")
+    @Value("${token.ttl}")
+    private Long ttl;
+
+    @Value("${token.verifyUrl}")
     private String verifyUrl;
 
     private final ApplicationUserRepository applicationUserRepository;
