@@ -35,6 +35,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JWTAuthorizationFilter.class);
 
+    @SuppressWarnings("NullableProblems")
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                      HttpServletResponse response,
@@ -49,11 +50,9 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
                         userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                //refreshTokenRepository.deleteByUsername(username);
-                //String token = jwtUtils.generateRefreshToken(authentication);
             }
         } catch (ExpiredJwtException expiredJwtException){
-            String token = parseJwt(request, "Refresh");
+            String token = parseJwt(request, REFRESH);
             RefreshToken refreshToken = refreshTokenRepository.findByToken(token);
             if (token !=null && refreshToken != null){
                 String username = jwtUtils.getUserNameFromJwtToken(token,SECRET1);

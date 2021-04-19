@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping(path = "/external", produces = MediaType.APPLICATION_JSON_VALUE)
+@PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
 public class DocumentController {
 
     private final DocumentService documentService;
@@ -25,31 +26,26 @@ public class DocumentController {
     }
 
     @GetMapping("/document")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<GeneralResponse<Object>> getAllDocument() {
         return documentService.getAllDocument();
     }
 
     @DeleteMapping("/document/{documentId}")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public ResponseEntity<GeneralResponse<Object>> deleteDocument(@PathVariable(name="documentId") Long documentId){
         return documentService.deleteDocument(documentId);
     }
 
     @GetMapping("/document/{documentId}")
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     public  ResponseEntity<GeneralResponse<Object>> getDocumentByName(@PathVariable(name="documentId") Long documentId){
         return documentService.getDocumentById(documentId);
     }
 
     @PostMapping("document")
-    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<GeneralResponse<Object>> addDocument(@RequestBody CreateDocumentRequest createDocumentRequest){
         return documentService.addDocument(createDocumentRequest);
     }
 
     @PutMapping("/document/{documentId}")
-    @PreAuthorize("hasRole('ROLE_USER')")
     public  ResponseEntity<GeneralResponse<Object>> editDocument(@PathVariable(name="documentId") Long documentId,
                                         @RequestBody UpdateDocumentRequest updateDocumentRequest) {
             return documentService.changeDocument(updateDocumentRequest, documentId);

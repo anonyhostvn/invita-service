@@ -1,4 +1,4 @@
-package com.cmc.invitaservice.service.implement;
+package com.cmc.invitaservice.service.config;
 
 import com.cmc.invitaservice.repositories.ApplicationUserRepository;
 import com.cmc.invitaservice.repositories.entities.ApplicationUser;

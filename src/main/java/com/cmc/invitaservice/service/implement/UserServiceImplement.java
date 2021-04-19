@@ -17,6 +17,7 @@ import com.cmc.invitaservice.response.ResponseStatusEnum;
 import com.cmc.invitaservice.security.filter.JWT.JwtUtils;
 import com.cmc.invitaservice.security.filter.service.UserDetailsImplement;
 import com.cmc.invitaservice.service.UserService;
+import com.cmc.invitaservice.service.config.ValidationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

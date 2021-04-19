@@ -1,4 +1,4 @@
-package com.cmc.invitaservice.service.implement;
+package com.cmc.invitaservice.service.config;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

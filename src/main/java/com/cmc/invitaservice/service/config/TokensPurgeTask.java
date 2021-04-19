@@ -1,4 +1,4 @@
-package com.cmc.invitaservice.service.implement;
+package com.cmc.invitaservice.service.config;
 
 import com.cmc.invitaservice.repositories.RefreshTokenRepository;
 import org.springframework.scheduling.annotation.Scheduled;

@@ -9,6 +9,7 @@ import com.cmc.invitaservice.response.GeneralResponse;
 import com.cmc.invitaservice.response.ResponseFactory;
 import com.cmc.invitaservice.response.ResponseStatusEnum;
 import com.cmc.invitaservice.service.AdminService;
+import com.cmc.invitaservice.service.config.ValidationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,22 +27,24 @@ public class AdminServiceImplement implements AdminService {
     public AdminServiceImplement(ApplicationUserRepository applicationUserRepository,
                                  BCryptPasswordEncoder bCryptPasswordEncoder,
                                  ValidationService validationService,
-                                 RefreshTokenRepository refreshTokenRepository){
+                                 RefreshTokenRepository refreshTokenRepository) {
         this.applicationUserRepository = applicationUserRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.validationService = validationService;
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    private ResponseEntity<GeneralResponse<Object>> checkLogin(){
-        if (refreshTokenRepository.findByUsername("admin") == null) return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
+    private ResponseEntity<GeneralResponse<Object>> checkLogin() {
+        if (refreshTokenRepository.findByUsername("admin") == null)
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
         return null;
     }
 
     @Override
-    public ResponseEntity<GeneralResponse<Object>> getAllAccount(){
-        if (refreshTokenRepository.findByUsername("admin") == null)
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
+    public ResponseEntity<GeneralResponse<Object>> getAllAccount() {
+        ResponseEntity<GeneralResponse<Object>> check = checkLogin();
+        if (check != null) return check;
+
         List<ApplicationUser> applicationUserList = applicationUserRepository.findAll();
 
         GetAllApplicationUserResponse getAllApplicationUserResponse = new GetAllApplicationUserResponse();
@@ -50,7 +53,7 @@ public class AdminServiceImplement implements AdminService {
     }
 
     @Override
-    public ResponseEntity<GeneralResponse<Object>> getUserById(Long userId){
+    public ResponseEntity<GeneralResponse<Object>> getUserById(Long userId) {
         ResponseEntity<GeneralResponse<Object>> check = checkLogin();
         if (check != null) return check;
         ApplicationUser applicationUser = applicationUserRepository.findApplicationUserById(userId);
@@ -60,7 +63,7 @@ public class AdminServiceImplement implements AdminService {
     }
 
     @Override
-    public ResponseEntity<GeneralResponse<Object>> deleteUserById(Long userId){
+    public ResponseEntity<GeneralResponse<Object>> deleteUserById(Long userId) {
         ResponseEntity<GeneralResponse<Object>> check = checkLogin();
         if (check != null) return check;
         ApplicationUser applicationUser = applicationUserRepository.findApplicationUserById(userId);
@@ -72,7 +75,7 @@ public class AdminServiceImplement implements AdminService {
         return ResponseFactory.success("delete succesfully");
     }
 
-    private ResponseEntity<GeneralResponse<Object>> validateSignUp(UpdateAccountRequest updateAccountRequest){
+    private ResponseEntity<GeneralResponse<Object>> validateSignUp(UpdateAccountRequest updateAccountRequest) {
         return validationService.validRequest(
                 updateAccountRequest.getUsername(),
                 updateAccountRequest.getPassword(),
@@ -82,7 +85,7 @@ public class AdminServiceImplement implements AdminService {
     }
 
     @Override
-    public ResponseEntity<GeneralResponse<Object>> changeUserById(Long userId, UpdateAccountRequest updateAccountRequest){
+    public ResponseEntity<GeneralResponse<Object>> changeUserById(Long userId, UpdateAccountRequest updateAccountRequest) {
         ResponseEntity<GeneralResponse<Object>> check = checkLogin();
         if (check != null) return check;
         if (userId == 1)

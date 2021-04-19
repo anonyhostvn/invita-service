@@ -32,12 +32,22 @@ public class TemplateServiceImplement implements TemplateService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    @Override
-    public ResponseEntity<GeneralResponse<Object>> getAllTemplate() {
+    private String getUsername(){
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = userDetails.getUsername();
+        return userDetails.getUsername();
+    }
+
+    private ResponseEntity<GeneralResponse<Object>> checkLogin(String username){
         if (refreshTokenRepository.findByUsername(username) == null)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<GeneralResponse<Object>> getAllTemplate() {
+        String username = getUsername();
+        ResponseEntity<GeneralResponse<Object>> check = checkLogin(username);
+        if (check != null) return  check;
         List<InvitaTemplate> invitaTemplateList = invitaTemplateRepository.findAll();
 
         GetAllTemplateResponse getAllTemplateResponse = new GetAllTemplateResponse();
@@ -48,26 +58,25 @@ public class TemplateServiceImplement implements TemplateService {
 
     @Override
     public ResponseEntity<GeneralResponse<Object>> deleteTemplate(Long id){
-        if (refreshTokenRepository.findByUsername("admin") == null)
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
+        ResponseEntity<GeneralResponse<Object>> check = checkLogin("admin");
+        if (check != null) return  check;
         invitaTemplateRepository.deleteById(id);
         return ResponseFactory.success();
     }
 
     @Override
     public ResponseEntity<GeneralResponse<Object>> getTemplateByTemplateId(Long templateId){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = userDetails.getUsername();
-        if (refreshTokenRepository.findByUsername(username) == null)
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
+        String username = getUsername();
+        ResponseEntity<GeneralResponse<Object>> check = checkLogin(username);
+        if (check != null) return  check;
         InvitaTemplate invitaTemplate = invitaTemplateRepository.findInvitaTemplateById(templateId);
         return ResponseFactory.success(invitaTemplate);
     }
 
     @Override
     public ResponseEntity<GeneralResponse<Object>> addTemplate(CreateTemplateRequest createTemplateRequest){
-        if (refreshTokenRepository.findByUsername("admin") == null)
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
+        ResponseEntity<GeneralResponse<Object>> check = checkLogin("admin");
+        if (check != null) return  check;
         InvitaTemplate invitaTemplate = new InvitaTemplate();
         invitaTemplate.setCreateTemplateRequest(createTemplateRequest);
         invitaTemplateRepository.save(invitaTemplate);
@@ -76,8 +85,8 @@ public class TemplateServiceImplement implements TemplateService {
 
     @Override
     public ResponseEntity<GeneralResponse<Object>> changeTemplate(CreateTemplateRequest createTemplateRequest, Long templateId){
-        if (refreshTokenRepository.findByUsername("admin") == null)
-            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
+        ResponseEntity<GeneralResponse<Object>> check = checkLogin("admin");
+        if (check != null) return  check;
         InvitaTemplate invitaTemplate = invitaTemplateRepository.findInvitaTemplateById(templateId);
         if (invitaTemplate == null)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
