@@ -3,7 +3,6 @@ package com.cmc.invitaservice.service.implement;
 import com.cmc.invitaservice.mailsender.EmailService;
 import com.cmc.invitaservice.models.external.request.*;
 import com.cmc.invitaservice.models.external.response.LoginResponse;
-import com.cmc.invitaservice.redis.entities.VerifyUserToken;
 import com.cmc.invitaservice.redis.service.IRedisCaching;
 import com.cmc.invitaservice.repositories.ApplicationUserRepository;
 import com.cmc.invitaservice.repositories.RefreshTokenRepository;
@@ -37,7 +36,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.cmc.invitaservice.security.SecurityConstants.MANAGEMENT_MAIL;
-import static com.cmc.invitaservice.security.SecurityConstants.VERIFY_KEY;
 
 @Service
 @Slf4j
@@ -82,19 +80,22 @@ public class UserServiceImplement implements UserService{
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    private ResponseEntity<GeneralResponse<Object>> addAccount(CreateAccountRequest createAccountRequest){
+    private Long addAccount(CreateAccountRequest createAccountRequest){
         Set<Role> roles = new HashSet<>();
         ApplicationUser applicationUser = new ApplicationUser();
         applicationUser.setCreateAccountRequest(createAccountRequest);
         roles.add(roleRepository.findByName(ERole.ROLE_USER));
         applicationUser.setRoles(roles);
         applicationUserRepository.save(applicationUser);
-        return ResponseFactory.success(applicationUser, ApplicationUser.class);
+        return applicationUser.getId();
     }
 
     private ResponseEntity<GeneralResponse<Object>> checkAccount(LoginRequest loginRequest) {
         ApplicationUser applicationUser = applicationUserRepository.findByUsername(loginRequest.getUsername());
-        if (applicationUser != null && new BCryptPasswordEncoder().matches(loginRequest.getPassword(), applicationUser.getPassword())) return null;
+        if (applicationUser == null) return ResponseFactory.error(HttpStatus.valueOf(403), ResponseStatusEnum.NOT_EXIST);
+        if (!applicationUser.isStatus())
+            return ResponseFactory.error(HttpStatus.valueOf(403), ResponseStatusEnum.VERIFIED_EMAIL);
+        if (applicationUser.isStatus() && new BCryptPasswordEncoder().matches(loginRequest.getPassword(), applicationUser.getPassword())) return null;
         return ResponseFactory.error(HttpStatus.valueOf(403), ResponseStatusEnum.WRONG_USERNAME_OR_PASSWORD);
     }
 
@@ -112,7 +113,6 @@ public class UserServiceImplement implements UserService{
     public ResponseEntity<GeneralResponse<Object>> changePassword(ChangePasswordRequest changePasswordRequest){
         ResponseEntity<GeneralResponse<Object>> validateResult = validationService.validateChangePassword(changePasswordRequest.getNewPassword(), changePasswordRequest.getRetypeNewPassword());
         if (validateResult != null) return validateResult;
-
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
         ApplicationUser applicationUser = applicationUserRepository.findByUsername(username);
@@ -139,7 +139,6 @@ public class UserServiceImplement implements UserService{
         List<String> roles = userDetailsImplement.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-
         LoginResponse loginResponse = new LoginResponse(jwt1, jwt, userDetailsImplement.getId(), userDetailsImplement.getUsername(), userDetailsImplement.getEmail(), roles);
         return ResponseFactory.success(loginResponse, LoginResponse.class);
     }
@@ -159,10 +158,12 @@ public class UserServiceImplement implements UserService{
     public ResponseEntity<GeneralResponse<Object>> signupAccount(CreateAccountRequest createAccountRequest, HttpServletRequest request){
         ResponseEntity<GeneralResponse<Object>> validateResult = validateSignUp(createAccountRequest);
         if (validateResult != null) return validateResult;
+        validateResult = validationService.validExist(createAccountRequest.getUsername(), createAccountRequest.getEmail());
+        if (validateResult != null) return validateResult;
         String token = UUID.randomUUID().toString();
         createAccountRequest.setPassword(bCryptPasswordEncoder.encode(createAccountRequest.getPassword()));
-        VerifyUserToken verifyUserToken = new VerifyUserToken(createAccountRequest);
-        iRedisCaching.addToHash(token, VERIFY_KEY, verifyUserToken, ttl);
+        Long userId = addAccount(createAccountRequest);
+        iRedisCaching.addOpsValue(token, userId, ttl);
         sendMail(createAccountRequest.getEmail(), verifyUrl, token);
         return ResponseFactory.success("Waiting for verification");
     }
@@ -170,15 +171,14 @@ public class UserServiceImplement implements UserService{
     @Override
     public ResponseEntity<GeneralResponse<Object>> verifySignUp(Map<String, String> requestParam){
         String token = requestParam.get("token");
-        VerifyUserToken verifyUserToken = (VerifyUserToken) iRedisCaching.getFromHash(token, VERIFY_KEY);
-        if (verifyUserToken == null)
+        String userId = (String) iRedisCaching.getFromOpsValue(token);
+        if (userId == null)
             return ResponseFactory.error(HttpStatus.valueOf(403), ResponseStatusEnum.UNKNOWN_ERROR);
-        CreateAccountRequest createAccountRequest = new CreateAccountRequest();
-        createAccountRequest.setAccount(verifyUserToken);
-        ResponseEntity<GeneralResponse<Object>> validateResult = validationService.validExist(createAccountRequest.getUsername(), createAccountRequest.getEmail());
-        if (validateResult != null) return validateResult;
-        iRedisCaching.removeFromHash(token, VERIFY_KEY);
-        return addAccount(createAccountRequest);
+        ApplicationUser applicationUser = applicationUserRepository.findApplicationUserById(Long.valueOf(userId));
+        applicationUser.setStatus(true);
+        applicationUserRepository.save(applicationUser);
+        iRedisCaching.removeFromOpsValue(token);
+        return ResponseFactory.success(applicationUser, ApplicationUser.class);
     }
 
     @Override

@@ -44,9 +44,7 @@ public class AdminServiceImplement implements AdminService {
     public ResponseEntity<GeneralResponse<Object>> getAllAccount() {
         ResponseEntity<GeneralResponse<Object>> check = checkLogin();
         if (check != null) return check;
-
         List<ApplicationUser> applicationUserList = applicationUserRepository.findAll();
-
         GetAllApplicationUserResponse getAllApplicationUserResponse = new GetAllApplicationUserResponse();
         getAllApplicationUserResponse.setListApplicationUser(applicationUserList);
         return ResponseFactory.success(getAllApplicationUserResponse);
@@ -90,17 +88,14 @@ public class AdminServiceImplement implements AdminService {
         if (check != null) return check;
         if (userId == 1)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_UPDATE_ADMIN);
-
         ResponseEntity<GeneralResponse<Object>> validateResult = validateSignUp(updateAccountRequest);
         if (validateResult != null) return validateResult;
-
         ApplicationUser applicationUser = applicationUserRepository.findApplicationUserById(userId);
         if (applicationUser == null)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_EXIST);
         applicationUser.setUpdateAccountRequest(updateAccountRequest);
         applicationUser.setPassword(bCryptPasswordEncoder.encode(updateAccountRequest.getPassword()));
         applicationUserRepository.save(applicationUser);
-
         return ResponseFactory.success(applicationUserRepository.findApplicationUserById(userId));
     }
 }

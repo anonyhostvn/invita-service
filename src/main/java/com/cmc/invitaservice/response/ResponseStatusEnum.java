@@ -19,7 +19,8 @@ public enum ResponseStatusEnum {
     RETYPE_OLD_PASSWORD_ERROR("E-010", "Password is wrong"),
     NOT_EXIST("E-011", "Account not exists"),
     NOT_UPDATE_ADMIN("E-012","Can not delete admin"),
-    ACCOUNT_LOGGED_IN("E-013","Account is logged in");
+    ACCOUNT_LOGGED_IN("E-013","Account is logged in"),
+    VERIFIED_EMAIL("E-014", "Verify email to register completely");
 
     private final String code;
     private final String message;

@@ -22,9 +22,12 @@ public class ValidationService {
         return applicationUser != null;
     }
 
-    private boolean findEmail(String email){
+    private long findEmail(String email){
         ApplicationUser applicationUser = applicationUserRepository.findByEmail(email);
-        return applicationUser != null;
+        if (applicationUser != null)
+            if (applicationUser.isStatus()) return 2;
+            else return 1;
+        return 0;
     }
 
     private boolean checkCharacter(char character) {
@@ -97,13 +100,13 @@ public class ValidationService {
     public ResponseEntity<GeneralResponse<Object>> validRequest(String username,
                                                                 String password,
                                                                 String firstname,
-                                                                String lasname,
+                                                                String lastname,
                                                                 String email) {
         if (!formatUsernameAndPassword(username))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.USERNAME_ERROR);
         if (!formatUsernameAndPassword(password))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.PASSWORD_ERROR);
-        if (!formatName(firstname, lasname))
+        if (!formatName(firstname, lastname))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NAME_ERROR);
         if (!formatEmail(email))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.EMAIL_ERROR);
@@ -113,8 +116,12 @@ public class ValidationService {
     public ResponseEntity<GeneralResponse<Object>> validExist(String username, String email){
         if (findUsername(username))
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.USER_EXIST);
-        if (findEmail(email))
+
+        long status = findEmail(email);
+        if (status==2)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.EMAIL_EXIST);
+        else if (status == 1)
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.VERIFIED_EMAIL);
         return null;
     }
 

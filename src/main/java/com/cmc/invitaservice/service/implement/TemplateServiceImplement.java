@@ -49,10 +49,8 @@ public class TemplateServiceImplement implements TemplateService {
         ResponseEntity<GeneralResponse<Object>> check = checkLogin(username);
         if (check != null) return  check;
         List<InvitaTemplate> invitaTemplateList = invitaTemplateRepository.findAll();
-
         GetAllTemplateResponse getAllTemplateResponse = new GetAllTemplateResponse();
         getAllTemplateResponse.setListTemplate(invitaTemplateList);
-
         return ResponseFactory.success(getAllTemplateResponse);
     }
 

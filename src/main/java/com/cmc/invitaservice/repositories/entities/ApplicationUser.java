@@ -34,6 +34,9 @@ public class ApplicationUser extends BaseEntity {
     @Column(name =  "email", nullable = false, unique = true)
     private  String email;
 
+    @Column(name =  "status", nullable = false)
+    private boolean status;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -47,6 +50,7 @@ public class ApplicationUser extends BaseEntity {
         this.firstName = createAccountRequest.getFirstName();
         this.lastName = createAccountRequest.getLastName();
         this.email = createAccountRequest.getEmail();
+        this.status = false;
     }
 
     public void setUpdateAccountRequest(UpdateAccountRequest updateAccountRequest){
