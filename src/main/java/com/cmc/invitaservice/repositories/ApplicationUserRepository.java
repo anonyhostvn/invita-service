@@ -5,6 +5,8 @@ import com.cmc.invitaservice.repositories.entities.ApplicationUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 
 
@@ -17,4 +19,7 @@ public interface ApplicationUserRepository extends JpaRepository<ApplicationUser
 
     ApplicationUser findByEmail(String email);
     ApplicationUser findApplicationUserById(Long Id);
+
+    @Transactional
+    void deleteApplicationUserByStatusFalseAndCreatedTimeLessThan(Date date);
 }
