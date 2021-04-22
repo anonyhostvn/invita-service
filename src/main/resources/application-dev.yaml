@@ -15,9 +15,12 @@ spring:
   cache:
     cache-names: password_reset_token, verify_user_token
     caffeine:
-      spec: maximumSize=500,expireAfterAccess=300s
+      spec: maximumSize=500,expireAfterAccess=3000s
 
 management:
+  endpoint:
+    health:
+      show-details: always
   endpoints:
     web:
       exposure:
