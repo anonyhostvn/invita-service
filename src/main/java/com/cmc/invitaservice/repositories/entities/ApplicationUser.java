@@ -2,13 +2,17 @@ package com.cmc.invitaservice.repositories.entities;
 
 import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
 import com.cmc.invitaservice.models.external.request.UpdateAccountRequest;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -36,6 +40,10 @@ public class ApplicationUser extends BaseEntity {
 
     @Column(name =  "status", nullable = false)
     private boolean status;
+
+    @OneToMany(mappedBy = "applicationUser", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties(value = "applicationUser", allowSetters = true)
+    private List<InvitaDocument> invitaDocumentList;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",

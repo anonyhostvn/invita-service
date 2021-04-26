@@ -30,7 +30,6 @@ public class ScheduleService {
         Date now = Date.from(Instant.now());
         refreshTokenRepository.deleteByExpiryDateLessThan(now);
         now.setTime(now.getTime() - ttl * 1000);
-        System.out.println(now);
         applicationUserRepository.deleteApplicationUserByStatusFalseAndCreatedTimeLessThan(now);
     }
 }

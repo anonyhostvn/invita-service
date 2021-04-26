@@ -2,10 +2,12 @@ package com.cmc.invitaservice.repositories.entities;
 
 import com.cmc.invitaservice.models.external.request.CreateDocumentRequest;
 import com.cmc.invitaservice.models.external.request.UpdateDocumentRequest;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -21,8 +23,9 @@ public class InvitaDocument extends BaseEntity{
     @Column(name = "creator_id")
     private Long creatorId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "template_id", referencedColumnName = "id")
+    @JsonIgnoreProperties(value = "invitaDocumentList", allowSetters = true)
     private InvitaTemplate invitaTemplate;
 
     @Column(name = "document_name")
@@ -34,8 +37,9 @@ public class InvitaDocument extends BaseEntity{
     @Column(name = "note")
     private String note;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    @JsonIgnoreProperties(value = "invitaDocumentList", allowSetters = true)
     private ApplicationUser applicationUser;
 
     public void setUpdateDocumentRequest(UpdateDocumentRequest updateDocumentRequest){

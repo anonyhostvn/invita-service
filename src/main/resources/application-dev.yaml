@@ -14,11 +14,6 @@ spring:
     hibernate:
       ddl-auto: none
 
-  cache:
-    cache-names: password_reset_token, verify_user_token
-    caffeine:
-      spec: maximumSize=500,expireAfterAccess=300s
-
   redis:
     host: localhost
     password:
