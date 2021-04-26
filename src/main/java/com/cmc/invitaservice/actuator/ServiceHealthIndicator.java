@@ -8,6 +8,8 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Slf4j
@@ -27,14 +29,13 @@ public class ServiceHealthIndicator implements HealthIndicator {
         CaffeineCache cache = (CaffeineCache) cacheManager.getCache("password_reset_token");
         if (cache == null) {
             log.warn("Cache not available");
-            return Health.down().withDetail("smoke test", "cache not available").build();
+            return Health.down().withDetail("password_reset_token", "cache not available").build();
         }
         Set<Object> keys = cache.getNativeCache().asMap().keySet();
+        Map<String, Object> map = new HashMap<>();
         for (Object key : keys){
-            System.out.println(key.toString());
-            System.out.println(passwordResetTokenRepository.getPasswordResetTokenByToken(key.toString()).getUserId());
+            map.put(key.toString(), passwordResetTokenRepository.getByToken(key.toString()));
         }
-        //System.out.println(keys);
-        return Health.up().build();
+        return Health.up().status("password_reset").withDetails(map).build();
     }
 }

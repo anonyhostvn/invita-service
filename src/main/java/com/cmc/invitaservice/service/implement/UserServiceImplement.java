@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.cmc.invitaservice.security.SecurityConstants.MANAGEMENT_MAIL;
@@ -98,6 +99,16 @@ public class UserServiceImplement implements UserService{
 
     }
 
+    private void sendMail(String mail, String url, String token){
+        CompletableFuture.runAsync(() ->
+                emailService.sendEmail(MANAGEMENT_MAIL,
+                        mail,
+                        "Password Reset Request",
+                        "To reset your password, click the link below:\n" + url + token)
+        );
+        log.info("Mail has been sent!");
+    }
+
     @Override
     public ResponseEntity<GeneralResponse<Object>> changePassword(ChangePasswordRequest changePasswordRequest){
         ResponseEntity<GeneralResponse<Object>> validateResult = validationService.validateChangePassword(changePasswordRequest.getNewPassword(), changePasswordRequest.getRetypeNewPassword());
@@ -151,25 +162,22 @@ public class UserServiceImplement implements UserService{
         if (validateResult != null) return validateResult;
         String token = UUID.randomUUID().toString();
         createAccountRequest.setPassword(bCryptPasswordEncoder.encode(createAccountRequest.getPassword()));
-        verifyUserTokenRepository.addVerifyUserToken(token, createAccountRequest);
-        emailService.sendEmail(MANAGEMENT_MAIL,
-                createAccountRequest.getEmail(),
-                "Verify Account Request",
-                "To start your registration, click the link below:\n" + verifyUrl + token);
+        verifyUserTokenRepository.addToken(token, createAccountRequest);
+        sendMail(createAccountRequest.getEmail(), verifyUrl, token);
         return ResponseFactory.success("Waiting for verification");
     }
 
     @Override
     public ResponseEntity<GeneralResponse<Object>> verifySignUp(Map<String, String> requestParam){
         String token = requestParam.get("token");
-        VerifyUserToken verifyUserToken = verifyUserTokenRepository.getVerifyUserTokenByToken(token);
+        VerifyUserToken verifyUserToken = verifyUserTokenRepository.getByToken(token);
         if (verifyUserToken == null)
             return ResponseFactory.error(HttpStatus.valueOf(403), ResponseStatusEnum.UNKNOWN_ERROR);
         CreateAccountRequest createAccountRequest = new CreateAccountRequest();
         createAccountRequest.setAccount(verifyUserToken);
         ResponseEntity<GeneralResponse<Object>> validateResult = validationService.validExist(createAccountRequest.getUsername(), createAccountRequest.getEmail());
         if (validateResult != null) return validateResult;
-        verifyUserTokenRepository.deleteVerifyUserTokenByToken(token);
+        verifyUserTokenRepository.deleteByToken(token);
         return addAccount(createAccountRequest);
     }
 
@@ -179,18 +187,16 @@ public class UserServiceImplement implements UserService{
         if (applicationUser == null)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.NOT_EXIST);
         String token = UUID.randomUUID().toString();
-        passwordResetTokenRepository.addPasswordResetToken(token, applicationUser.getId());
-        emailService.sendEmail(MANAGEMENT_MAIL,
-                applicationUser.getEmail(),
-                "Password Reset Request",
-                "To reset your password, click the link below:\n" + resetUrl + token);
+        ResetPasswordToken resetPasswordToken = new ResetPasswordToken(applicationUser.getId());
+        passwordResetTokenRepository.addToken(token, resetPasswordToken);
+        sendMail(applicationUser.getEmail(), resetUrl, token);
         return ResponseFactory.success("A password reset link has been sent to " + applicationUser.getUsername());
     }
 
     @Override
     public ResponseEntity<GeneralResponse<Object>> resetPassword(ResetPasswordRequest resetPasswordRequest, Map<String, String> requestParam ) {
         String token = requestParam.get("token");
-        PasswordResetToken passwordResetToken = passwordResetTokenRepository.getPasswordResetTokenByToken(token);
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.getByToken(token);
         if (passwordResetToken == null)
             return ResponseFactory.error(HttpStatus.valueOf(403), ResponseStatusEnum.UNKNOWN_ERROR);
         ResponseEntity<GeneralResponse<Object>> validateResult = validationService.validateChangePassword(resetPasswordRequest.getPassword(), resetPasswordRequest.getRetypePassword());
@@ -198,7 +204,7 @@ public class UserServiceImplement implements UserService{
         ApplicationUser applicationUser = applicationUserRepository.findApplicationUserById(passwordResetToken.getUserId());
         applicationUser.setPassword(bCryptPasswordEncoder.encode(resetPasswordRequest.getPassword()));
         applicationUserRepository.save(applicationUser);
-        passwordResetTokenRepository.deletePasswordResetTokenByToken(token);
+        passwordResetTokenRepository.deleteByToken(token);
         return ResponseFactory.success("Password has changed !");
     }
 

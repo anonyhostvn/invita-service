@@ -13,8 +13,6 @@ import lombok.Setter;
 public class VerifyUserToken{
     private static final long serialVersionUID = -6741886447122081418L;
 
-    private String token;
-
     private String username;
 
     private String password;
@@ -25,8 +23,7 @@ public class VerifyUserToken{
 
     private  String email;
 
-    public VerifyUserToken(String token, CreateAccountRequest createAccountRequest){
-        this.token = token;
+    public VerifyUserToken(CreateAccountRequest createAccountRequest){
         this.username = createAccountRequest.getUsername();
         this.password = createAccountRequest.getPassword();
         this.firstName = createAccountRequest.getFirstName();

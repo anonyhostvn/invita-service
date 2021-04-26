@@ -4,7 +4,7 @@ import com.cmc.invitaservice.cache.entities.VerifyUserToken;
 import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
 
 public interface VerifyUserTokenRepository {
-    VerifyUserToken getVerifyUserTokenByToken(String token);
-    void deleteVerifyUserTokenByToken(String token);
-    VerifyUserToken addVerifyUserToken(String token, CreateAccountRequest createAccountRequest);
+    VerifyUserToken getByToken(String token);
+    void deleteByToken(String token);
+    VerifyUserToken addToken(String token, CreateAccountRequest createAccountRequest);
 }

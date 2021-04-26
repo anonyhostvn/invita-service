@@ -12,18 +12,18 @@ public class VerifyUserTokenRepositoryImplement implements VerifyUserTokenReposi
 
     @Override
     @Cacheable(value = "verify_user_token", key = "#token")
-    public VerifyUserToken getVerifyUserTokenByToken(String token) {
+    public VerifyUserToken getByToken(String token) {
         return null;
     }
 
     @Override
     @Cacheable(value = "verify_user_token", key = "#token")
-    public VerifyUserToken addVerifyUserToken(String token, CreateAccountRequest createAccountRequest) {
-        return new VerifyUserToken(token, createAccountRequest);
+    public VerifyUserToken addToken(String token, CreateAccountRequest createAccountRequest) {
+        return new VerifyUserToken(createAccountRequest);
     }
 
     @Override
     @CacheEvict(value = "verify_user_token", key = "#token")
-    public void deleteVerifyUserTokenByToken(String token) {
+    public void deleteByToken(String token) {
     }
 }

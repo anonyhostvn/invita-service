@@ -1,9 +1,10 @@
 package com.cmc.invitaservice.cache;
 
 import com.cmc.invitaservice.cache.entities.PasswordResetToken;
+import com.cmc.invitaservice.models.external.request.ResetPasswordToken;
 
-public interface PasswordResetTokenRepository{
-    PasswordResetToken getPasswordResetTokenByToken(String token);
-    void deletePasswordResetTokenByToken(String token);
-    PasswordResetToken addPasswordResetToken(String token, Long userId);
+public interface PasswordResetTokenRepository {
+    PasswordResetToken getByToken(String token);
+    void deleteByToken(String token);
+    PasswordResetToken addToken(String token, ResetPasswordToken resetPasswordToken);
 }
