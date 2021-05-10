@@ -58,6 +58,9 @@ public class TemplateServiceImplement implements TemplateService {
     public ResponseEntity<GeneralResponse<Object>> deleteTemplate(Long id){
         ResponseEntity<GeneralResponse<Object>> check = checkLogin("admin");
         if (check != null) return  check;
+        InvitaTemplate invitaTemplate = invitaTemplateRepository.findInvitaTemplateById(id);
+        if (invitaTemplate == null)
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.TEMPLATE_EXIST);
         invitaTemplateRepository.deleteById(id);
         return ResponseFactory.success();
     }
@@ -71,11 +74,20 @@ public class TemplateServiceImplement implements TemplateService {
         return ResponseFactory.success(invitaTemplate);
     }
 
+    private InvitaTemplate getParent(Long id){
+        return invitaTemplateRepository.findInvitaTemplateById(id);
+    }
+
     @Override
     public ResponseEntity<GeneralResponse<Object>> addTemplate(CreateTemplateRequest createTemplateRequest){
         ResponseEntity<GeneralResponse<Object>> check = checkLogin("admin");
         if (check != null) return  check;
+        Long parentId = createTemplateRequest.getParentId();
+        InvitaTemplate parentTemplate = getParent(parentId);
+        if (parentId != null && parentTemplate == null)
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.TEMPLATE_EXIST);
         InvitaTemplate invitaTemplate = new InvitaTemplate();
+        invitaTemplate.setInvitaTemplate(parentTemplate);
         invitaTemplate.setCreateTemplateRequest(createTemplateRequest);
         invitaTemplateRepository.save(invitaTemplate);
         return ResponseFactory.success(invitaTemplate);
@@ -88,7 +100,12 @@ public class TemplateServiceImplement implements TemplateService {
         InvitaTemplate invitaTemplate = invitaTemplateRepository.findInvitaTemplateById(templateId);
         if (invitaTemplate == null)
             return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.UNKNOWN_ERROR);
+        Long parentId = createTemplateRequest.getParentId();
+        InvitaTemplate parentTemplate = getParent(parentId);
+        if (parentId != null && (parentTemplate == null || parentId.equals(templateId)))
+            return ResponseFactory.error(HttpStatus.valueOf(400), ResponseStatusEnum.TEMPLATE_EXIST);
         invitaTemplate.setCreateTemplateRequest(createTemplateRequest);
+        invitaTemplate.setInvitaTemplate(parentTemplate);
         invitaTemplateRepository.save(invitaTemplate);
         return ResponseFactory.success(invitaTemplate);
     }

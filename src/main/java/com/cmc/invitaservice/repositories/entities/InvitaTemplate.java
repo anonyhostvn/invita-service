@@ -2,8 +2,7 @@ package com.cmc.invitaservice.repositories.entities;
 
 
 import com.cmc.invitaservice.models.external.request.CreateTemplateRequest;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,8 +35,17 @@ public class InvitaTemplate extends BaseEntity {
     private String previewImg;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "invitaTemplate", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties(value = "invitaTemplate", allowSetters = true)
+    @JsonIgnore//Properties(value = "invitaTemplate", allowSetters = true)
     private List<InvitaDocument> invitaDocumentList = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id", referencedColumnName = "id")
+    @JsonIgnore//Properties(value = "invitaTemplateList", allowSetters = true)
+    private InvitaTemplate invitaTemplate;
+
+    @OneToMany(mappedBy = "invitaTemplate", cascade = CascadeType.ALL)
+    @JsonIgnore//Properties(value = "invitaTemplate", allowSetters = true)
+    private List<InvitaTemplate> invitaTemplateList;
 
     public void setCreateTemplateRequest(CreateTemplateRequest createTemplateRequest){
         this.templateName = createTemplateRequest.getTemplateName();

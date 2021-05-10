@@ -2,15 +2,13 @@ package com.cmc.invitaservice.repositories.entities;
 
 import com.cmc.invitaservice.models.external.request.CreateAccountRequest;
 import com.cmc.invitaservice.models.external.request.UpdateAccountRequest;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import lombok.*;
-import net.minidev.json.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +40,7 @@ public class ApplicationUser extends BaseEntity {
     private boolean status;
 
     @OneToMany(mappedBy = "applicationUser", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties(value = "applicationUser", allowSetters = true)
+    @JsonIgnore//Properties(value = "applicationUser", allowSetters = true)
     private List<InvitaDocument> invitaDocumentList;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -50,6 +48,7 @@ public class ApplicationUser extends BaseEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @JsonIgnore
     private Set<Role> roles = new HashSet<>();
 
     public void setCreateAccountRequest(CreateAccountRequest createAccountRequest){

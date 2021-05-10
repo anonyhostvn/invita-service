@@ -8,4 +8,5 @@ public class CreateTemplateRequest {
     private String templateContent;
     private String note;
     private String previewImg;
+    private Long parentId;
 }

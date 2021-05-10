@@ -11,4 +11,5 @@ public class UpdateDocumentRequest {
     private String documentName;
     private String filledInformation;
     private String note;
+    private Long parentId;
 }

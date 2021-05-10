@@ -20,7 +20,9 @@ public enum ResponseStatusEnum {
     NOT_EXIST("E-011", "Account not exists"),
     NOT_UPDATE_ADMIN("E-012","Can not delete admin"),
     ACCOUNT_LOGGED_IN("E-013","Account is logged in"),
-    VERIFIED_EMAIL("E-014", "Verify email to register completely");
+    VERIFIED_EMAIL("E-014", "Verify email to register completely"),
+    DOCUMENT_EXIST("E-015", "Document not exists"),
+    TEMPLATE_EXIST("E-016", "Template not exists");
 
     private final String code;
     private final String message;
